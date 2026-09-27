@@ -44,8 +44,8 @@ export const ClinicalNotesTab: React.FC = () => {
     const res = await patientService.createClinicalNote({
       patientId: selectedPatient.id,
       dateTime: new Date().toISOString(),
-      dentistId: user?.id || 'dentist-1',
-      dentistName: user?.name || 'Dr. Prasad Patil',
+      doctorId: user?.id || 'doctor-1',
+      doctorName: user?.name || 'Dr. Prasad Patil',
       noteType,
       content,
     });
@@ -122,7 +122,7 @@ export const ClinicalNotesTab: React.FC = () => {
                   <div className="flex items-center gap-3 text-xs text-slate-500 font-bold">
                     <div className="flex items-center gap-1">
                       <User className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Authored by: {note.dentistName}</span>
+                      <span>Authored by: {note.doctorName}</span>
                     </div>
                     <button
                       onClick={() => handleDeleteSubmit(note.id)}

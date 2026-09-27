@@ -146,7 +146,7 @@ export const AppointmentStatusBoard: React.FC = () => {
     printAppointmentToken(
       {
         ...appt,
-        physicianName: appt.physicianName || (appt as any).dentistName || 'Physician',
+        physicianName: appt.physicianName || (appt as any).doctorName || 'Physician',
         tokenNumber: appt.tokenNumber || Math.floor(Math.random() * 900) + 100,
         triagePriority: appt.triagePriority || 'Normal',
       },
@@ -287,7 +287,7 @@ export const AppointmentStatusBoard: React.FC = () => {
                               {/* Physician */}
                               <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
                                 <Stethoscope className="w-3 h-3" />
-                                {appt.physicianName || (appt as any).dentistName || 'Assigned Physician'}
+                                {appt.physicianName || (appt as any).doctorName || 'Assigned Physician'}
                               </p>
 
                               {/* Actions */}

@@ -425,7 +425,7 @@ const generateTimelineFromState = (state: any): TimelineEvent[] => {
           dateTime: vLog.date + 'T12:00:00Z',
           type: 'TreatmentPlan',
           title: `Progress Visit: ${item.description}`,
-          description: `Performed: ${vLog.procedurePerformed} - Dentist: ${vLog.dentist}`,
+          description: `Performed: ${vLog.procedurePerformed} - Doctor: ${vLog.doctor}`,
           referenceId: p.id
         });
       });

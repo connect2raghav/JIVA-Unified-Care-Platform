@@ -131,7 +131,7 @@ export const AssistantDashboard: React.FC = () => {
         message: `Task: "${task.title}"`
       });
 
-      // Notification to dentist
+      // Notification to doctor
       addNotification({
         title: activityTitle,
         description: `Task "${task.title}" is now ${nextStatus} (Assistant: ${user.name}).`,
@@ -208,8 +208,8 @@ export const AssistantDashboard: React.FC = () => {
     }, {
       patientId: task.patientId,
       visitId: task.visitId,
-      dentistId: task.dentistId,
-      dentistName: task.dentistName
+      doctorId: task.doctorId,
+      doctorName: task.doctorName
     });
 
     setIsUploading(false);
@@ -567,8 +567,8 @@ export const AssistantDashboard: React.FC = () => {
                       <p className="text-slate-700 font-black mt-0.5">{task.patientName || 'Unknown Patient'}</p>
                     </div>
                     <div>
-                      <span>Assigned Dentist:</span>
-                      <p className="text-slate-700 font-black mt-0.5">{task.dentistName}</p>
+                      <span>Assigned Doctor:</span>
+                      <p className="text-slate-700 font-black mt-0.5">{task.doctorName}</p>
                     </div>
                     <div>
                       <span>Instructions / Note:</span>
@@ -659,7 +659,7 @@ export const AssistantDashboard: React.FC = () => {
                   {task.status === 'Verified' && (
                     <div className="py-2.5 px-4 bg-emerald-50 rounded-xl text-emerald-800 font-extrabold text-xs text-center border border-emerald-100 flex items-center justify-center gap-1.5 select-none">
                       <CheckCircle2 className="w-4.5 h-4.5" />
-                      <span>Verified by Dentist</span>
+                      <span>Verified by Doctor</span>
                     </div>
                   )}
 

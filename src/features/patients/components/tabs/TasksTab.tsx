@@ -42,7 +42,7 @@ export const TasksTab: React.FC = () => {
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (task.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (task.assignedAssistantName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (task.dentistName || '').toLowerCase().includes(searchQuery.toLowerCase());
+      (task.doctorName || '').toLowerCase().includes(searchQuery.toLowerCase());
     
     const statusMatch = statusFilter === 'ALL' || task.status === statusFilter;
     const priorityMatch = priorityFilter === 'ALL' || task.priority === priorityFilter;
@@ -66,7 +66,7 @@ export const TasksTab: React.FC = () => {
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
             <Input 
-              placeholder="Search by task title, assistant or dentist..."
+              placeholder="Search by task title, assistant or doctor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 h-10 rounded-xl text-xs"
@@ -150,8 +150,8 @@ export const TasksTab: React.FC = () => {
                     <p className="text-slate-600 font-black mt-0.5">{task.assignedAssistantName || 'Unassigned'}</p>
                   </div>
                   <div>
-                    <span>Assigned Dentist:</span>
-                    <p className="text-slate-600 font-black mt-0.5">{task.dentistName}</p>
+                    <span>Assigned Doctor:</span>
+                    <p className="text-slate-600 font-black mt-0.5">{task.doctorName}</p>
                   </div>
                   <div>
                     <span>Visit ID Session:</span>

@@ -60,7 +60,7 @@ export const CreateClinicModal: React.FC<CreateClinicModalProps> = ({ onClose, o
         p_email: ownerEmail,
         p_password: ownerPassword,
         p_name: ownerName,
-        p_role: 'Dentist',
+        p_role: 'Doctor',
         p_phone: '',
         p_clinic_id: clinicId
       });
@@ -204,7 +204,7 @@ export const CreateClinicModal: React.FC<CreateClinicModalProps> = ({ onClose, o
                 <div className="bg-indigo-50/50 rounded-xl p-4 mb-2 border border-indigo-50">
                   <h4 className="text-sm font-semibold text-indigo-900 mb-1">Administrator Setup</h4>
                   <p className="text-xs text-indigo-700/70 leading-relaxed">
-                    This user will be created as the initial 'Dentist' and owner of <strong>{clinicName || 'the clinic'}</strong>. They will use these credentials to log in.
+                    This user will be created as the initial 'Doctor' and owner of <strong>{clinicName || 'the clinic'}</strong>. They will use these credentials to log in.
                   </p>
                 </div>
 

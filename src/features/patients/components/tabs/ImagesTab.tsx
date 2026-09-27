@@ -144,7 +144,7 @@ export const ImagesTab: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    const validDentistId = user?.id && !user.id.startsWith('10000000') ? user.id : undefined;
+    const validDoctorId = user?.id && !user.id.startsWith('10000000') ? user.id : undefined;
 
     const res = await patientService.createImageRecord({
       patientId: selectedPatient.id,
@@ -156,8 +156,8 @@ export const ImagesTab: React.FC = () => {
       toothNumber: linkedTooth !== '' ? Number(linkedTooth) : undefined,
       surface: linkedSurface || undefined,
       treatmentId: linkedTreatmentId || undefined,
-      dentistId: validDentistId,
-      dentistName: user?.name || 'Dr. Prasad Patil'
+      doctorId: validDoctorId,
+      doctorName: user?.name || 'Dr. Prasad Patil'
     });
 
     setIsSubmitting(false);
@@ -202,7 +202,7 @@ export const ImagesTab: React.FC = () => {
     const matchesSearch = 
       img.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (img.notes || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (img.dentistName || '').toLowerCase().includes(searchQuery.toLowerCase());
+      (img.doctorName || '').toLowerCase().includes(searchQuery.toLowerCase());
       
     const matchesCategory = selectedCategory === 'All' || img.category === selectedCategory;
     const matchesTooth = selectedToothFilter === 'All' || img.toothNumber === Number(selectedToothFilter);
@@ -258,7 +258,7 @@ export const ImagesTab: React.FC = () => {
           <div className="relative col-span-1 md:col-span-2">
             <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
             <Input
-              placeholder="Search title, dentist, notes..."
+              placeholder="Search title, doctor, notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 h-10 rounded-xl text-xs bg-slate-50 border-slate-100 focus:bg-white"
@@ -382,7 +382,7 @@ export const ImagesTab: React.FC = () => {
 
                   {/* Small info footer */}
                   <div className="text-[9px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between items-center select-none font-bold">
-                    <span>Dentist: {img.dentistName || 'Dr. Prasad Patil'}</span>
+                    <span>Doctor: {img.doctorName || 'Dr. Prasad Patil'}</span>
                     {img.annotations && (
                       <span className="text-[8px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100 font-black">
                         Tags ({JSON.parse(img.annotations).length})

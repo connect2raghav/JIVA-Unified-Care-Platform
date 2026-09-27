@@ -58,7 +58,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_own_reports'
   ],
   // Legacy role mappings for backward compatibility
-  'Dentist': [
+  'Doctor': [
     'manage_users', 'manage_clinic', 'view_reports',
     'view_all_patients', 'view_all_appointments',
     'system_settings', 'clinical_records'
@@ -67,7 +67,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'platform_management', 'manage_clinics',
     'manage_platform_users', 'view_platform_audit'
   ],
-  'Other Dentist': [
+  'Other Doctor': [
     'view_assigned_patients', 'clinical_records', 'view_reports'
   ],
   'Dental Assistant': [

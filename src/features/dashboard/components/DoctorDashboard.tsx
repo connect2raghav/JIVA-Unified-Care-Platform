@@ -4,10 +4,10 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { usePatientStore } from '@/store/usePatientStore';
 import { receptionService } from '@/services/receptionService';
 import type { Appointment } from '@/types';
-import { Calendar, Clock, Play, FileText, CheckCircle2, AlertCircle, HeartPulse, Activity, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Play, FileText, CheckCircle2, AlertCircle, HeartPulse, Activity, Trash2, Bell, CheckSquare, ListTodo, History, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const OtherDentistDashboard: React.FC = () => {
+export const DoctorDashboard: React.FC = () => {
   const { user } = useAuthStore();
   const { loadAllPatients } = usePatientStore();
   const navigate = useNavigate();
@@ -57,8 +57,20 @@ export const OtherDentistDashboard: React.FC = () => {
   const completedVisits = todayAppointments.filter(a => a.status === 'Completed');
   const emergencyPatients = todayAppointments.filter(a => (a.reason || '').toLowerCase().includes('emergency'));
 
-  const myAppointments = todayAppointments.filter(a => a.dentistId === user.id || (a.dentistName && a.dentistName === user.name));
-  const otherAppointments = todayAppointments.filter(a => a.dentistId !== user.id && (!a.dentistName || a.dentistName !== user.name));
+  const myAppointments = todayAppointments.filter(a => a.doctorId === user.id || (a.doctorName && a.doctorName === user.name));
+  const otherAppointments = todayAppointments.filter(a => a.doctorId !== user.id && (!a.doctorName || a.doctorName !== user.name));
+
+  const getDoctorBreakdown = (appts: Appointment[]) => {
+    if (appts.length === 0) return 'None';
+    const breakdown = appts.reduce((acc, curr) => {
+      const name = curr.doctorName || 'Unassigned';
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(breakdown).map(([doc, count]) => `${doc}: ${count}`).join(' | ');
+  };
+
+  // MOCK DATA for PRD Modules
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-xs font-medium text-slate-600 leading-relaxed">
@@ -78,53 +90,53 @@ export const OtherDentistDashboard: React.FC = () => {
 
       {/* Top Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 select-none">
-        <Card className="border-none shadow-sm bg-white rounded-2xl">
+        <Card className="border-none shadow-sm bg-white rounded-2xl" title={getDoctorBreakdown(todayAppointments)}>
           <CardContent className="p-4 flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
               <Calendar className="w-5 h-5" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{myAppointments.length}</p>
-            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">My Schedule</p>
+            <p className="text-2xl font-black text-slate-900">{todayAppointments.length}</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">Today's Schedule</p>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white rounded-2xl">
+        <Card className="border-none shadow-sm bg-white rounded-2xl" title={getDoctorBreakdown(waitingPatients)}>
           <CardContent className="p-4 flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mb-2">
               <Clock className="w-5 h-5" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{waitingPatients.filter(a => a.dentistId === user.id || a.dentistName === user.name).length}</p>
-            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">My Waiting</p>
+            <p className="text-2xl font-black text-slate-900">{waitingPatients.length}</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">Waiting</p>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white rounded-2xl">
+        <Card className="border-none shadow-sm bg-white rounded-2xl" title={getDoctorBreakdown(inTreatment)}>
           <CardContent className="p-4 flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-2">
               <Activity className="w-5 h-5" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{inTreatment.filter(a => a.dentistId === user.id || a.dentistName === user.name).length}</p>
-            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">My In Treatment</p>
+            <p className="text-2xl font-black text-slate-900">{inTreatment.length}</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">In Treatment</p>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white rounded-2xl">
+        <Card className="border-none shadow-sm bg-white rounded-2xl" title={getDoctorBreakdown(completedVisits)}>
           <CardContent className="p-4 flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
               <CheckCircle2 className="w-5 h-5" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{completedVisits.filter(a => a.dentistId === user.id || a.dentistName === user.name).length}</p>
-            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">My Completed</p>
+            <p className="text-2xl font-black text-slate-900">{completedVisits.length}</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">Completed</p>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-white rounded-2xl">
+        <Card className="border-none shadow-sm bg-white rounded-2xl" title={getDoctorBreakdown(emergencyPatients)}>
           <CardContent className="p-4 flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mb-2">
               <AlertCircle className="w-5 h-5" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{emergencyPatients.filter(a => a.dentistId === user.id || a.dentistName === user.name).length}</p>
-            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">My Emergencies</p>
+            <p className="text-2xl font-black text-slate-900">{emergencyPatients.length}</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 mt-1">Emergencies</p>
           </CardContent>
         </Card>
       </div>
@@ -153,20 +165,20 @@ export const OtherDentistDashboard: React.FC = () => {
                     <span className="font-bold text-slate-800">{appt.reason || 'General Visit'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 font-semibold block mb-1">Assigned Dentist</span>
-                    <span className="font-bold text-slate-800">{appt.dentistName}</span>
+                    <span className="text-slate-400 font-semibold block mb-1">Assigned Doctor</span>
+                    <span className="font-bold text-slate-800">{appt.doctorName}</span>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-50">
                   <button
-                    onClick={() => navigate(`/other-dentist/visit/${appt.patientId}?appointmentId=${appt.id}`)}
+                    onClick={() => navigate(`/doctor/visit/${appt.patientId}?appointmentId=${appt.id}`)}
                     className="flex-1 bg-red-600 hover:bg-red-700 text-white h-9 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors"
                   >
                     <Play className="w-3.5 h-3.5" /> Start Visit
                   </button>
                   <button
-                    onClick={() => navigate(`/other-dentist/patients/${appt.patientId}`)}
+                    onClick={() => navigate(`/doctor/patients/${appt.patientId}`)}
                     className="flex-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 h-9 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors"
                   >
                     <FileText className="w-3.5 h-3.5" /> View History
@@ -192,20 +204,48 @@ export const OtherDentistDashboard: React.FC = () => {
         </div>
         
         {otherAppointments.length > 0 && (
-          <div className="mt-8">
-            <div className="flex items-center mb-6">
+          <>
+            <div className="my-8 flex items-center">
               <div className="h-px flex-1 bg-slate-200"></div>
-              <span className="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Other Dentists' Activity</span>
+              <span className="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Other Doctors' Appointments</span>
               <div className="h-px flex-1 bg-slate-200"></div>
             </div>
-            <div className="bg-slate-50 rounded-2xl p-6 text-center border border-slate-100">
-              <p className="text-3xl font-black text-slate-900 mb-1">{otherAppointments.length}</p>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Patients being seen by other doctors today</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {otherAppointments.map(appt => (
+                <Card key={appt.id} className="border border-slate-100 shadow-sm bg-white rounded-2xl opacity-75 hover:opacity-100 transition-opacity">
+                  <CardContent className="p-5 flex flex-col gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-150 flex items-center justify-center font-bold text-slate-600 text-sm shrink-0">
+                        {appt.patientName.split(' ').map(n => n[0]).slice(0,2).join('')}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-slate-900 text-sm">{appt.patientName}</h4>
+                        <p className="text-[11px] text-slate-400 font-medium">
+                          Time: {new Date(appt.dateTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • Status: {appt.status}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <div>
+                        <span className="text-slate-400 font-semibold block mb-1">Appointment Type</span>
+                        <span className="font-bold text-slate-800">{appt.reason || 'General Visit'}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 font-semibold block mb-1">Assigned Doctor</span>
+                        <span className="font-bold text-slate-800">{appt.doctorName}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
   );
 };
 
+export default DoctorDashboard;

@@ -192,13 +192,21 @@ export const LoginForm: React.FC = () => {
                     Select a role to explore the platform instantly — no credentials needed
                   </p>
                 </div>
-                <button
-                  onClick={() => setShowLoginForm(true)}
-                  className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 transition-colors"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  Staff Login
-                </button>
+                <div className="hidden md:flex items-center gap-2">
+                  <Link
+                    to="/register-clinic"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-xs font-bold text-emerald-700 transition-colors"
+                  >
+                    Register Organization
+                  </Link>
+                  <button
+                    onClick={() => setShowLoginForm(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 transition-colors"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    Staff Login
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -226,7 +234,13 @@ export const LoginForm: React.FC = () => {
               </div>
 
               {/* Mobile Staff Login */}
-              <div className="md:hidden mt-4">
+              <div className="md:hidden mt-4 space-y-2">
+                <Link
+                  to="/register-clinic"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-xs font-bold text-emerald-700 transition-colors"
+                >
+                  Register Organization
+                </Link>
                 <button
                   onClick={() => setShowLoginForm(true)}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 transition-colors"

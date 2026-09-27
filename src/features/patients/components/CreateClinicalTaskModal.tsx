@@ -53,14 +53,14 @@ export const CreateClinicalTaskModal: React.FC<CreateClinicalTaskModalProps> = (
         description,
         patientId: patientId === 'none' ? undefined : patientId,
         patientName: selectedPatient?.name,
-        dentistId: user?.id || 'dentist-1',
-        dentistName: user?.name || 'Dentist',
+        doctorId: user?.id || 'doctor-1',
+        doctorName: user?.name || 'Doctor',
         priority,
         dueTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
         status: 'Pending',
         estimatedDuration: '15 mins',
-        createdBy: user?.id || 'dentist-1',
-        createdByName: user?.name || 'Dentist',
+        createdBy: user?.id || 'doctor-1',
+        createdByName: user?.name || 'Doctor',
       } as any);
 
       if (res.success) {

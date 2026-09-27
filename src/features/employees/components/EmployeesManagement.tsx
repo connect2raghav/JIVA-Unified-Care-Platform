@@ -115,7 +115,7 @@ export const EmployeesManagement: React.FC = () => {
   const stats = useMemo(() => {
     return {
       total: staff.length,
-      dentists: staff.filter(e => e.role === 'Dentist' || e.role === 'Other Dentist').length,
+      doctors: staff.filter(e => e.role === 'Doctor' || e.role === 'Other Doctor').length,
       assistants: staff.filter(e => e.role === 'Dental Assistant').length,
       receptionists: staff.filter(e => e.role === 'Receptionist').length,
       active: staff.filter(e => e.is_active).length,
@@ -311,7 +311,7 @@ export const EmployeesManagement: React.FC = () => {
     const isCurrentUser = emp.id === currentUser?.id || emp.email === currentUser?.email;
 
     switch (emp.role) {
-      case 'Dentist':
+      case 'Doctor':
         return isCurrentUser ? (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-red-50 text-red-700 border border-red-200">
             <Stethoscope className="w-3 h-3" /> Owner
@@ -321,10 +321,10 @@ export const EmployeesManagement: React.FC = () => {
             <Stethoscope className="w-3 h-3" /> Co-owner
           </span>
         );
-      case 'Other Dentist':
+      case 'Other Doctor':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
-            <Stethoscope className="w-3 h-3" /> Dentist
+            <Stethoscope className="w-3 h-3" /> Doctor
           </span>
         );
       case 'Dental Assistant':
@@ -391,8 +391,8 @@ export const EmployeesManagement: React.FC = () => {
               <Stethoscope className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Dentists</p>
-              <h3 className="text-2xl font-black text-slate-900 leading-none mt-1">{stats.dentists}</h3>
+              <p className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Doctors</p>
+              <h3 className="text-2xl font-black text-slate-900 leading-none mt-1">{stats.doctors}</h3>
             </div>
           </CardContent>
         </Card>
@@ -435,7 +435,7 @@ export const EmployeesManagement: React.FC = () => {
         </div>
         <div className="h-6 w-px bg-slate-200 hidden md:block"></div>
         <div className="flex gap-2 w-full md:w-auto p-1 overflow-x-auto no-scrollbar">
-          {['ALL', 'Dentist', 'Other Dentist', 'Dental Assistant', 'Receptionist'].map(role => (
+          {['ALL', 'Doctor', 'Other Doctor', 'Dental Assistant', 'Receptionist'].map(role => (
             <button
               key={role}
               onClick={() => setRoleFilter(role)}
@@ -572,7 +572,7 @@ export const EmployeesManagement: React.FC = () => {
               <div className="space-y-2">
                 <Label className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Role Access</Label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['Dentist', 'Other Dentist', 'Dental Assistant', 'Receptionist'].map(r => (
+                  {['Doctor', 'Other Doctor', 'Dental Assistant', 'Receptionist'].map(r => (
                     <button
                       key={r}
                       type="button"
@@ -595,7 +595,7 @@ export const EmployeesManagement: React.FC = () => {
                   id="name" 
                   value={name} 
                   onChange={e => setName(e.target.value)} 
-                  placeholder={role.includes('Dentist') ? "e.g. Dr. Jane Doe" : "e.g. Jane Doe"}
+                  placeholder={role.includes('Doctor') ? "e.g. Dr. Jane Doe" : "e.g. Jane Doe"}
                   className="h-11 rounded-xl bg-slate-50 border-slate-200 font-semibold placeholder:text-slate-300"
                   required 
                 />
@@ -679,7 +679,7 @@ export const EmployeesManagement: React.FC = () => {
               <div className="space-y-2">
                 <Label className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Role Access</Label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['Dentist', 'Other Dentist', 'Dental Assistant', 'Receptionist'].map(r => (
+                  {['Doctor', 'Other Doctor', 'Dental Assistant', 'Receptionist'].map(r => (
                     <button
                       key={r}
                       type="button"

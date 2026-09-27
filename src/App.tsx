@@ -133,8 +133,8 @@ export const App: React.FC = () => {
       'LabTechnician': '/admin/reports',
       'Patient': '/patient/dashboard',
       // Legacy
-      'Dentist': '/admin/dashboard',
-      'Other Dentist': '/physician/dashboard',
+      'Doctor': '/admin/dashboard',
+      'Other Doctor': '/physician/dashboard',
       'Dental Assistant': '/receptionist/dashboard',
     };
     return homePaths[user.role] || '/login';
@@ -298,8 +298,8 @@ export const App: React.FC = () => {
         </Route>
 
         {/* Legacy route redirects */}
-        <Route path="/dentist/*" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/other-dentist/*" element={<Navigate to="/physician/dashboard" replace />} />
+        <Route path="/doctor/*" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/other-doctor/*" element={<Navigate to="/physician/dashboard" replace />} />
         <Route path="/assistant/*" element={<Navigate to="/receptionist/dashboard" replace />} />
 
         {/* Fallback */}

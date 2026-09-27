@@ -20,8 +20,8 @@ const mapPatientFromDb = (db: any): Patient => {
     avatarUrl: db.avatar_url || db.avatarUrl || '',
     address: db.address || '',
     notes: db.notes || '',
-    assignedDentistId: db.assigned_dentist_id || db.assignedDentistId,
-    assignedDentistName: db.assigned_dentist_name || db.assignedDentistName,
+    assignedDoctorId: db.assigned_doctor_id || db.assignedDoctorId,
+    assignedDoctorName: db.assigned_doctor_name || db.assignedDoctorName,
     createdAt: db.created_at || db.createdAt || new Date().toISOString()
   };
 };
@@ -31,8 +31,8 @@ const mapAppointmentFromDb = (db: any): Appointment => {
     id: db.id,
     patientId: db.patient_id || db.patientId,
     patientName: db.patients?.name || db.patient_name || db.patientName || '',
-    dentistId: db.dentist_id || db.dentistId,
-    dentistName: db.users?.name || db.dentist_name || db.dentistName || '',
+    doctorId: db.doctor_id || db.doctorId,
+    doctorName: db.users?.name || db.doctor_name || db.doctorName || '',
     dateTime: db.date_time || db.dateTime,
     durationMinutes: db.duration_minutes || db.durationMinutes || 30,
     status: db.status,
@@ -46,8 +46,8 @@ const mapVisitFromDb = (db: any): Visit => {
     id: db.id,
     patientId: db.patient_id || db.patientId,
     dateTime: db.date_time || db.dateTime,
-    dentistId: db.dentist_id || db.dentistId,
-    dentistName: db.users?.name || db.dentist_name || db.dentistName || '',
+    doctorId: db.doctor_id || db.doctorId,
+    doctorName: db.users?.name || db.doctor_name || db.doctorName || '',
     chiefComplaint: db.chief_complaint || db.chiefComplaint || '',
     vitals: db.vitals || {
       bloodPressure: db.blood_pressure,
@@ -70,8 +70,8 @@ const mapClinicalNoteFromDb = (db: any): ClinicalNote => {
     id: db.id,
     patientId: db.patient_id || db.patientId,
     dateTime: db.created_at || db.createdAt || db.dateTime || new Date().toISOString(),
-    dentistId: db.dentist_id || db.dentistId,
-    dentistName: db.users?.name || db.dentist_name || db.dentistName || '',
+    doctorId: db.doctor_id || db.doctorId,
+    doctorName: db.users?.name || db.doctor_name || db.doctorName || '',
     noteType: db.note_type || db.noteType || 'Progress',
     content: db.content || ''
   };
@@ -81,8 +81,8 @@ const mapFollowUpFromDb = (db: any): FollowUp => {
   return {
     id: db.id,
     patientId: db.patient_id || db.patientId,
-    dentistId: db.dentist_id || db.dentistId,
-    dentistName: db.users?.name || db.dentist_name || db.dentistName || '',
+    doctorId: db.doctor_id || db.doctorId,
+    doctorName: db.users?.name || db.doctor_name || db.doctorName || '',
     dueDate: db.due_date || db.dueDate,
     reason: db.reason,
     status: db.status || 'Pending',
@@ -98,7 +98,7 @@ export const patientService = {
         *,
         appointments (
           date_time,
-          dentist_id,
+          doctor_id,
           users ( name )
         )
       `);
@@ -118,16 +118,16 @@ export const patientService = {
         }
         
         const patient = mapPatientFromDb(db);
-        patient.assignedDentistId = latestAppt ? latestAppt.dentist_id : undefined;
-        patient.assignedDentistName = latestAppt ? latestAppt.users?.name : undefined;
+        patient.assignedDoctorId = latestAppt ? latestAppt.doctor_id : undefined;
+        patient.assignedDoctorName = latestAppt ? latestAppt.users?.name : undefined;
         return patient;
       });
       
-      if (user && user.role === 'Other Dentist') {
+      if (user && user.role === 'Other Doctor') {
         // Fetch all patients the user has either an appointment or a visit with
         const [apptsRes, visitsRes] = await Promise.all([
-          supabase.from('appointments').select('patient_id').eq('dentist_id', user.id),
-          supabase.from('visits').select('patient_id').eq('dentist_id', user.id)
+          supabase.from('appointments').select('patient_id').eq('doctor_id', user.id),
+          supabase.from('visits').select('patient_id').eq('doctor_id', user.id)
         ]);
         
         const allowedIds = new Set<string>();
@@ -151,7 +151,7 @@ export const patientService = {
         *,
         appointments (
           date_time,
-          dentist_id,
+          doctor_id,
           users ( name )
         )
       `).eq('id', id);
@@ -171,13 +171,13 @@ export const patientService = {
       }
       
       const patient = mapPatientFromDb(data);
-      patient.assignedDentistId = latestAppt ? latestAppt.dentist_id : undefined;
-      patient.assignedDentistName = latestAppt ? latestAppt.users?.name : undefined;
+      patient.assignedDoctorId = latestAppt ? latestAppt.doctor_id : undefined;
+      patient.assignedDoctorName = latestAppt ? latestAppt.users?.name : undefined;
       
-      if (user && user.role === 'Other Dentist') {
+      if (user && user.role === 'Other Doctor') {
         const [apptsRes, visitsRes] = await Promise.all([
-          supabase.from('appointments').select('id').eq('dentist_id', user.id).eq('patient_id', id).limit(1),
-          supabase.from('visits').select('id').eq('dentist_id', user.id).eq('patient_id', id).limit(1)
+          supabase.from('appointments').select('id').eq('doctor_id', user.id).eq('patient_id', id).limit(1),
+          supabase.from('visits').select('id').eq('doctor_id', user.id).eq('patient_id', id).limit(1)
         ]);
         
         const hasAccess = (apptsRes.data && apptsRes.data.length > 0) || (visitsRes.data && visitsRes.data.length > 0);
@@ -234,8 +234,8 @@ export const patientService = {
    */
   createOrResumeVisit: async (payload: {
     patientId: string;
-    dentistId: string;
-    dentistName: string;
+    doctorId: string;
+    doctorName: string;
     visitType: string;
     chiefComplaint?: string;
   }): Promise<{ success: boolean; data?: Visit; error?: string; resumed?: boolean }> => {
@@ -254,8 +254,8 @@ export const patientService = {
       id: `visit-${Math.random().toString(36).substring(2, 9)}`,
       patientId: payload.patientId,
       dateTime: new Date().toISOString(),
-      dentistId: payload.dentistId,
-      dentistName: payload.dentistName,
+      doctorId: payload.doctorId,
+      doctorName: payload.doctorName,
       chiefComplaint: payload.chiefComplaint || '',
       diagnosis: '',
       treatment: '',
@@ -268,8 +268,8 @@ export const patientService = {
     try {
       const row: Record<string, unknown> = {
         patient_id: payload.patientId,
-        dentist_id: payload.dentistId || null,
-        dentist_name: payload.dentistName,
+        doctor_id: payload.doctorId || null,
+        doctor_name: payload.doctorName,
         chief_complaint: payload.chiefComplaint || '',
         diagnosis: '',
         treatment: '',
@@ -409,7 +409,7 @@ export const patientService = {
                 procedureId: v.procedure_id,
                 date: v.visit_date,
                 procedurePerformed: v.procedure_performed,
-                dentist: v.dentist_name,
+                doctor: v.doctor_name,
                 notes: v.notes,
                 outcome: v.outcome,
                 nextVisit: v.next_visit
@@ -427,7 +427,7 @@ export const patientService = {
               remarks: procOutcomeRaw.remarks,
               complications: procOutcomeRaw.complications,
               patientFeedback: procOutcomeRaw.patient_feedback,
-              dentistRecommendation: procOutcomeRaw.dentist_recommendation
+              doctorRecommendation: procOutcomeRaw.doctor_recommendation
             } : undefined;
             
             const procFollowUps = followUps
@@ -458,8 +458,8 @@ export const patientService = {
               priority: dbProc.priority,
               estimatedVisits: dbProc.estimated_visits,
               estimatedDuration: dbProc.estimated_duration,
-              assignedDentistId: dbProc.assigned_dentist_id,
-              assignedDentistName: dbProc.assigned_dentist_name,
+              assignedDoctorId: dbProc.assigned_doctor_id,
+              assignedDoctorName: dbProc.assigned_doctor_name,
               assistantId: dbProc.assistant_id,
               assistantName: dbProc.assistant_name,
               expectedCompletionDate: dbProc.expected_completion_date,
@@ -506,8 +506,8 @@ export const patientService = {
         surface: db.surface,
         diseaseId: db.disease_id,
         treatmentId: db.treatment_id,
-        dentistId: db.dentist_id,
-        dentistName: db.dentist_name,
+        doctorId: db.doctor_id,
+        doctorName: db.doctor_name,
         annotations: db.annotations
       }));
     } catch (e) {
@@ -609,7 +609,7 @@ export const patientService = {
         .from('clinical_records')
         .insert([{
           patient_id: newNote.patientId,
-          dentist_id: newNote.dentistId,
+          doctor_id: newNote.doctorId,
           note_type: newNote.noteType,
           content: newNote.content,
         }])
@@ -675,8 +675,8 @@ export const patientService = {
           estimated_visits: item.estimatedVisits || 1,
           estimated_duration: item.estimatedDuration || '',
           cost: item.cost,
-          assigned_dentist_id: item.assignedDentistId || null,
-          assigned_dentist_name: item.assignedDentistName || '',
+          assigned_doctor_id: item.assignedDoctorId || null,
+          assigned_doctor_name: item.assignedDoctorName || '',
           assistant_id: item.assistantId || null,
           assistant_name: item.assistantName || '',
           status: item.status || 'Planned',
@@ -705,8 +705,8 @@ export const patientService = {
           priority: p.priority,
           estimatedVisits: p.estimated_visits,
           estimatedDuration: p.estimated_duration,
-          assignedDentistId: p.assigned_dentist_id,
-          assignedDentistName: p.assigned_dentist_name,
+          assignedDoctorId: p.assigned_doctor_id,
+          assignedDoctorName: p.assigned_doctor_name,
           assistantId: p.assistant_id,
           assistantName: p.assistant_name,
           expectedCompletionDate: p.expected_completion_date,
@@ -787,8 +787,8 @@ export const patientService = {
           estimated_visits: procedure.estimatedVisits || 1,
           estimated_duration: procedure.estimatedDuration || '',
           cost: procedure.cost,
-          assigned_dentist_id: procedure.assignedDentistId || null,
-          assigned_dentist_name: procedure.assignedDentistName || '',
+          assigned_doctor_id: procedure.assignedDoctorId || null,
+          assigned_doctor_name: procedure.assignedDoctorName || '',
           assistant_id: procedure.assistantId || null,
           assistant_name: procedure.assistantName || '',
           status: procedure.status || 'Planned',
@@ -821,8 +821,8 @@ export const patientService = {
           priority: data.priority,
           estimatedVisits: data.estimated_visits,
           estimatedDuration: data.estimated_duration,
-          assignedDentistId: data.assigned_dentist_id,
-          assignedDentistName: data.assigned_dentist_name,
+          assignedDoctorId: data.assigned_doctor_id,
+          assignedDoctorName: data.assigned_doctor_name,
           assistantId: data.assistant_id,
           assistantName: data.assistant_name,
           expectedCompletionDate: data.expected_completion_date,
@@ -852,8 +852,8 @@ export const patientService = {
           estimated_visits: updates.estimatedVisits,
           estimated_duration: updates.estimatedDuration,
           cost: updates.cost,
-          assigned_dentist_id: updates.assignedDentistId,
-          assigned_dentist_name: updates.assignedDentistName,
+          assigned_doctor_id: updates.assignedDoctorId,
+          assigned_doctor_name: updates.assignedDoctorName,
           assistant_id: updates.assistantId,
           assistant_name: updates.assistantName,
           expected_completion_date: updates.expectedCompletionDate,
@@ -901,7 +901,7 @@ export const patientService = {
           procedure_id: procedureId,
           visit_date: visitLog.date,
           procedure_performed: visitLog.procedurePerformed,
-          dentist_name: visitLog.dentist,
+          doctor_name: visitLog.doctor,
           notes: visitLog.notes,
           outcome: visitLog.outcome,
           next_visit: visitLog.nextVisit
@@ -931,7 +931,7 @@ export const patientService = {
           remarks: outcome.remarks,
           complications: outcome.complications,
           patient_feedback: outcome.patientFeedback,
-          dentist_recommendation: outcome.dentistRecommendation
+          doctor_recommendation: outcome.doctorRecommendation
         }], { onConflict: 'procedure_id' });
 
       if (error) throw error;
@@ -992,8 +992,8 @@ export const patientService = {
           surface: newImg.surface || null,
           disease_id: newImg.diseaseId || null,
           treatment_id: newImg.treatmentId || null,
-          dentist_id: newImg.dentistId || null,
-          dentist_name: newImg.dentistName || null
+          doctor_id: newImg.doctorId || null,
+          doctor_name: newImg.doctorName || null
         }])
         .select()
         .single();
@@ -1009,8 +1009,8 @@ export const patientService = {
           surface: data.surface,
           diseaseId: data.disease_id,
           treatmentId: data.treatment_id,
-          dentistId: data.dentist_id,
-          dentistName: data.dentist_name,
+          doctorId: data.doctor_id,
+          doctorName: data.doctor_name,
           annotations: data.annotations
         } 
       };
@@ -1033,8 +1033,8 @@ export const patientService = {
           surface: updates.surface,
           disease_id: updates.diseaseId,
           treatment_id: updates.treatmentId,
-          dentist_id: updates.dentistId,
-          dentist_name: updates.dentistName,
+          doctor_id: updates.doctorId,
+          doctor_name: updates.doctorName,
           annotations: updates.annotations
         })
         .eq('id', id)
@@ -1057,8 +1057,8 @@ export const patientService = {
           surface: data.surface,
           diseaseId: data.disease_id,
           treatmentId: data.treatment_id,
-          dentistId: data.dentist_id,
-          dentistName: data.dentist_name,
+          doctorId: data.doctor_id,
+          doctorName: data.doctor_name,
           annotations: data.annotations
         }
       };

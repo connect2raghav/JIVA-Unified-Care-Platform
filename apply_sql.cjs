@@ -12,6 +12,7 @@ async function main() {
 
     const migrations = [
       'supabase/migrations/20260927000000_jiva_platform.sql',
+      'supabase/migrations/20260927000001_disable_rls.sql',
       'supabase/seed/jiva_demo_seed.sql'
     ];
 

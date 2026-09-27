@@ -59,7 +59,7 @@ export const ClinicManagement: React.FC = () => {
   // Compute enriched clinics
   const enrichedClinics = clinics.map(clinic => {
     const clinicUsers = users.filter(u => u.clinic_id === clinic.id);
-    const owner = clinicUsers.find(u => u.role === 'Dentist');
+    const owner = clinicUsers.find(u => u.role === 'Doctor');
     const staffCount = clinicUsers.length;
 
     const clinicPatients = patients.filter(p => p.clinic_id === clinic.id);
@@ -332,7 +332,7 @@ export const ClinicManagement: React.FC = () => {
                               p_email: adminEmail,
                               p_password: defaultPassword,
                               p_name: reg.owner_name,
-                              p_role: 'Dentist',
+                              p_role: 'Doctor',
                               p_phone: adminPhone,
                               p_clinic_id: clinicId
                             });

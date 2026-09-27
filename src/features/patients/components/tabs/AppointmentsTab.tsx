@@ -39,7 +39,7 @@ export const AppointmentsTab: React.FC = () => {
               <TableHeader className="bg-slate-55/60">
                 <TableRow>
                   <TableHead className="text-xs font-black text-slate-500">Date & Time</TableHead>
-                  <TableHead className="text-xs font-black text-slate-500">Dentist</TableHead>
+                  <TableHead className="text-xs font-black text-slate-500">Doctor</TableHead>
                   <TableHead className="text-xs font-black text-slate-500">Reason</TableHead>
                   <TableHead className="text-xs font-black text-slate-500">Duration</TableHead>
                   <TableHead className="text-xs font-black text-slate-500">Status</TableHead>
@@ -60,7 +60,7 @@ export const AppointmentsTab: React.FC = () => {
                           <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-600">
                             <User className="w-3 h-3" />
                           </div>
-                          <span>{appt.dentistName}</span>
+                          <span>{appt.doctorName}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-xs font-semibold text-slate-800 max-w-[250px] truncate">

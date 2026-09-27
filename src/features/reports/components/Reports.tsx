@@ -60,7 +60,7 @@ export const Reports: React.FC = () => {
   const [clinicName, setClinicName] = useState('Core Dental Headquarters');
   const [isLoading, setIsLoading] = useState(true);
   const [reportData, setReportData] = useState<any>(null);
-  const [dentistsList, setDentistsList] = useState<any[]>([]);
+  const [doctorsList, setDoctorsList] = useState<any[]>([]);
 
   // Main Tab State
   const [mainTab, setMainTab] = useState<'analytics' | 'patient-reports'>('patient-reports');
@@ -79,7 +79,7 @@ export const Reports: React.FC = () => {
   const [dateRange, setDateRange] = useState<string>('This Month');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  const [selectedDentist, setSelectedDentist] = useState<string>('ALL');
+  const [selectedDoctor, setSelectedDoctor] = useState<string>('ALL');
   const [selectedToothFilter, setSelectedToothFilter] = useState<number | 'ALL'>('ALL');
   const [conditionFilter, setConditionFilter] = useState<string>('ALL');
 
@@ -100,8 +100,8 @@ export const Reports: React.FC = () => {
       setClinicName(data.name);
 
       const users = await adminService.getAllUsers();
-      const dentists = users.filter((u: any) => u.role === 'Dentist' && u.is_active !== false);
-      setDentistsList(dentists);
+      const doctors = users.filter((u: any) => u.role === 'Doctor' && u.is_active !== false);
+      setDoctorsList(doctors);
     };
     fetchInitialData();
   }, []);
@@ -143,7 +143,7 @@ export const Reports: React.FC = () => {
       
       const users = await adminService.getAllUsers();
       const mapped = (data || []).map(v => {
-        const dentist = users.find(u => u.id === v.dentist_id);
+        const doctor = users.find(u => u.id === v.doctor_id);
         return {
           id: v.id,
           dateTime: v.date_time,
@@ -152,7 +152,7 @@ export const Reports: React.FC = () => {
           treatment: v.treatment || '',
           visitType: v.visit_type || 'General',
           status: v.status || 'Completed',
-          dentistName: dentist?.name || v.dentist_name || 'Doctor',
+          doctorName: doctor?.name || v.doctor_name || 'Doctor',
           prescriptions: v.prescriptions || [],
           followup: v.followup || null,
         };
@@ -201,7 +201,7 @@ export const Reports: React.FC = () => {
           dateRange,
           startDate: dateRange === 'Custom Date Range' ? startDate : undefined,
           endDate: dateRange === 'Custom Date Range' ? endDate : undefined,
-          dentist: selectedDentist
+          doctor: selectedDoctor
         });
         setReportData(data);
 
@@ -250,7 +250,7 @@ export const Reports: React.FC = () => {
             dateRange: priorDateRange,
             startDate: priorStart,
             endDate: priorEnd,
-            dentist: selectedDentist
+            doctor: selectedDoctor
           });
           setPriorReportData(priorData);
         } else {
@@ -266,7 +266,7 @@ export const Reports: React.FC = () => {
     };
 
     fetchReports();
-  }, [dateRange, startDate, endDate, selectedDentist, addToast]);
+  }, [dateRange, startDate, endDate, selectedDoctor, addToast]);
 
   // Compute Tooth-by-Tooth Findings ("In report konse teeth ko ky hua")
   const toothFindings = useMemo(() => {
@@ -291,7 +291,7 @@ export const Reports: React.FC = () => {
           procedure: tr.procedure || 'Clinical Examination',
           notes: tr.notes || 'Documented during clinical examination',
           patientName: patient?.name || tr.patient_name || 'Registered Patient',
-          dentistName: tr.dentist_name || 'Dr. Prasad Patil',
+          doctorName: tr.doctor_name || 'Dr. Prasad Patil',
           date: tr.updated_at || tr.created_at || new Date().toISOString()
         };
       });
@@ -312,7 +312,7 @@ export const Reports: React.FC = () => {
         procedure: 'Class II Composite Restoration',
         notes: 'Deep dentinal caries on mesio-occlusal surface, excavated and restored with shade A2 composite.',
         patientName: 'Aarav Sharma',
-        dentistName: 'Dr. Prasad Patil',
+        doctorName: 'Dr. Prasad Patil',
         date: new Date().toISOString()
       },
       {
@@ -328,7 +328,7 @@ export const Reports: React.FC = () => {
         procedure: 'Esthetic Composite Build-up',
         notes: 'Traumatic class IV incisal angle fracture, bevel placed and built up with nano-hybrid composite.',
         patientName: 'Sneha Patel',
-        dentistName: 'Dr. Prasad Patil',
+        doctorName: 'Dr. Prasad Patil',
         date: new Date().toISOString()
       },
       {
@@ -344,7 +344,7 @@ export const Reports: React.FC = () => {
         procedure: 'Endodontic Therapy & Crown',
         notes: 'Irreversible pulpitis with apical periodontitis. Completed 3 canals obturation and crown prep.',
         patientName: 'Rohan Gupta',
-        dentistName: 'Dr. Prasad Patil',
+        doctorName: 'Dr. Prasad Patil',
         date: new Date().toISOString()
       },
       {
@@ -360,7 +360,7 @@ export const Reports: React.FC = () => {
         procedure: 'Restoration & Sealant',
         notes: 'Pit and fissure caries in buccal pit, prepared and restored.',
         patientName: 'Priya Mehta',
-        dentistName: 'Dr. Prasad Patil',
+        doctorName: 'Dr. Prasad Patil',
         date: new Date().toISOString()
       },
       {
@@ -376,7 +376,7 @@ export const Reports: React.FC = () => {
         procedure: 'Surgical Extraction',
         notes: 'Symptomatic impaction with pericoronitis, surgically extracted under local anesthesia.',
         patientName: 'Vikram Joshi',
-        dentistName: 'Dr. Prasad Patil',
+        doctorName: 'Dr. Prasad Patil',
         date: new Date().toISOString()
       },
       {
@@ -392,7 +392,7 @@ export const Reports: React.FC = () => {
         procedure: 'Implant Abutment Placement',
         notes: 'Osseointegrated implant with screw-retained ceramic crown.',
         patientName: 'Anita Nair',
-        dentistName: 'Dr. Prasad Patil',
+        doctorName: 'Dr. Prasad Patil',
         date: new Date().toISOString()
       }
     ];
@@ -459,7 +459,7 @@ export const Reports: React.FC = () => {
         restoration: draftRestoration,
         procedure: draftProcedure,
         notes: draftNotes,
-        dentist_name: user?.name || 'Dr. Prasad Patil',
+        doctor_name: user?.name || 'Dr. Prasad Patil',
         visit_id: affected.visitId
       }]);
       if (error) throw error;
@@ -476,7 +476,7 @@ export const Reports: React.FC = () => {
         dateRange,
         startDate: dateRange === 'Custom Date Range' ? startDate : undefined,
         endDate: dateRange === 'Custom Date Range' ? endDate : undefined,
-        dentist: selectedDentist
+        doctor: selectedDoctor
       });
       setReportData(newData);
       setIsToothModalOpen(false);
@@ -547,7 +547,7 @@ export const Reports: React.FC = () => {
       'Restoration Material': tf.restoration,
       'Procedure Performed': tf.procedure,
       'Patient Name': tf.patientName,
-      'Attending Doctor': tf.dentistName,
+      'Attending Doctor': tf.doctorName,
       'Clinical Notes': tf.notes,
       'Record Date': new Date(tf.date).toLocaleDateString()
     }));
@@ -557,7 +557,7 @@ export const Reports: React.FC = () => {
       'Code': p.code,
       'Status': p.status,
       'Patient': p.patientName,
-      'Assigned Dentist': p.assignedDentistName || 'Unassigned',
+      'Assigned Doctor': p.assignedDoctorName || 'Unassigned',
       'Cost': p.cost
     }));
 
@@ -567,7 +567,7 @@ export const Reports: React.FC = () => {
       'Severity': d.severity,
       'Tooth Number': d.toothNumber || '-',
       'Diagnosed': d.dateDiagnosed,
-      'Dentist': d.dentistName,
+      'Doctor': d.doctorName,
       'Patient ID': d.patientId
     }));
 
@@ -581,8 +581,8 @@ export const Reports: React.FC = () => {
       'Count': d.count
     }));
 
-    const dentistPerfExport = (chartData.dentistPerformanceData || []).map((d: any) => ({
-      'Dentist': d.name,
+    const doctorPerfExport = (chartData.doctorPerformanceData || []).map((d: any) => ({
+      'Doctor': d.name,
       'Treatments Completed': d.count
     }));
 
@@ -599,8 +599,8 @@ export const Reports: React.FC = () => {
       'Status': h.status,
       'Count': h.count
     }));
-    const dentistContributionExport = (clinicAnalysis?.dentistContribution || []).map((d: any) => ({
-      'Dentist': d.name,
+    const doctorContributionExport = (clinicAnalysis?.doctorContribution || []).map((d: any) => ({
+      'Doctor': d.name,
       'Cases Completed': d.treatments,
       'Revenue': d.revenue
     }));
@@ -614,7 +614,7 @@ export const Reports: React.FC = () => {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Summary');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(clinicAnalysisExport), 'Clinic_Analysis');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appointmentHealthExport), 'Appointment_Health');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dentistContributionExport), 'Dentist_Contribution');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(doctorContributionExport), 'Doctor_Contribution');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(topProceduresExport), 'Top_Procedures');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(toothExportData), 'Tooth_Pathology_Report');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(treatmentStatusData), 'Treatment_Status');
@@ -622,7 +622,7 @@ export const Reports: React.FC = () => {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(reportData.raw.followUps), 'Follow-Ups');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(demographicsData), 'Age_Demographics');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(genderData), 'Gender_Demographics');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dentistPerfExport), 'Dentist_Performance');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(doctorPerfExport), 'Doctor_Performance');
     XLSX.writeFile(wb, `Clinical_Report_${dateRange.replace(/ /g, '_')}.xlsx`);
     addToast({ type: 'success', title: 'Spreadsheet Downloaded', message: 'Excel report with all sections saved.' });
   };
@@ -636,7 +636,7 @@ export const Reports: React.FC = () => {
       'Surfaces': tf.surface,
       'Procedure': tf.procedure,
       'Patient': tf.patientName,
-      'Dentist': tf.dentistName,
+      'Doctor': tf.doctorName,
       'Notes': tf.notes,
       'Date': new Date(tf.date).toLocaleDateString()
     }));
@@ -652,13 +652,13 @@ export const Reports: React.FC = () => {
       'Code': p.code,
       'Status': p.status,
       'Cost': p.cost,
-      'Dentist': p.assignedDentistName || 'Unassigned'
+      'Doctor': p.assignedDoctorName || 'Unassigned'
     }));
 
     const combined = [...toothExportData, { FDI: '', Toth: '', Condition: '---DISEASES---', Surfaces: '', Procedure: '', Patient: '' },
       ...diseaseExportData.map(d => ({ FDI: '', Tooth: '', Condition: d.Disease, Surfaces: d.Status, Procedure: d.Severity, Patient: d.Tooth })),
       { FDI: '', Tooth: '', Condition: '---TREATMENTS---', Surfaces: '', Procedure: '', Patient: '' },
-      ...treatmentExportData.map(t => ({ FDI: '', Tooth: '', Condition: t.Treatment, Surfaces: t.Status, Procedure: t.Cost, Patient: t.Dentist }))
+      ...treatmentExportData.map(t => ({ FDI: '', Tooth: '', Condition: t.Treatment, Surfaces: t.Status, Procedure: t.Cost, Patient: t.Doctor }))
     ];
     const ws = XLSX.utils.json_to_sheet(combined);
     const csvOutput = XLSX.utils.sheet_to_csv(ws);
@@ -682,86 +682,12 @@ export const Reports: React.FC = () => {
     
     doc.setFontSize(12);
     doc.setTextColor(100);
-    doc.text(`Clinical Analytics & Tooth Pathology Report - ${dateRange}`, 14, 28);
+    doc.text(`Clinical Analytics Report - ${dateRange}`, 14, 28);
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 34);
     
-    // Draw 2D Visual Odontogram in PDF
-    doc.setFontSize(10);
-    doc.setTextColor(50);
-    doc.text('VISUAL ODONTOGRAM (Affected Teeth Status):', 14, 46);
-    
-    let startX = 14;
-    let startY = 52;
-    const boxSize = 8;
-    
-    // Upper Teeth row
-    doc.setFontSize(7);
-    UPPER_TEETH_FDI.forEach((num, i) => {
-      const affected = toothFindings.find(t => t.toothNumber === num);
-      if (affected) {
-        if (affected.condition === 'Dental Caries') doc.setFillColor(254, 226, 226); // red-50
-        else if (affected.condition === 'Root Canal Treated') doc.setFillColor(243, 232, 255); // purple-50
-        else if (affected.condition === 'Fractured Tooth') doc.setFillColor(255, 237, 213); // orange-50
-        else doc.setFillColor(254, 243, 199); // amber-50
-      } else {
-        doc.setFillColor(255, 255, 255);
-      }
-      doc.rect(startX + (i * (boxSize + 2)), startY, boxSize, boxSize, 'FD');
-      doc.setTextColor(affected ? 200 : 150, affected ? 0 : 150, affected ? 0 : 150);
-      doc.text(num.toString(), startX + (i * (boxSize + 2)) + 1, startY + 5);
-    });
-
-    // Lower Teeth row
-    startY += boxSize + 4;
-    LOWER_TEETH_FDI.forEach((num, i) => {
-      const affected = toothFindings.find(t => t.toothNumber === num);
-      if (affected) {
-        if (affected.condition === 'Dental Caries') doc.setFillColor(254, 226, 226);
-        else if (affected.condition === 'Root Canal Treated') doc.setFillColor(243, 232, 255);
-        else if (affected.condition === 'Fractured Tooth') doc.setFillColor(255, 237, 213);
-        else doc.setFillColor(254, 243, 199);
-      } else {
-        doc.setFillColor(255, 255, 255);
-      }
-      doc.rect(startX + (i * (boxSize + 2)), startY, boxSize, boxSize, 'FD');
-      doc.setTextColor(affected ? 200 : 150, affected ? 0 : 150, affected ? 0 : 150);
-      doc.text(num.toString(), startX + (i * (boxSize + 2)) + 1, startY + 5);
-    });
-
-    startY += 15;
-    doc.setFontSize(10);
-    doc.setTextColor(50);
-    doc.text('DETAILED TOOTH-BY-TOOTH FINDINGS & HISTORY:', 14, startY);
-    startY += 8;
-
-    toothFindings.forEach((tf, i) => {
-      if (startY > 270) {
-        doc.addPage();
-        startY = 20;
-      }
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
-      doc.text(`TOOTH #${tf.toothNumber} (${tf.toothName})`, 14, startY);
-      startY += 5;
-      
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.text(`Patient: ${tf.patientName} | Doctor: ${tf.dentistName} | Date: ${new Date(tf.date).toLocaleDateString()}`, 14, startY);
-      startY += 5;
-      doc.text(`Condition: ${tf.condition} | Surfaces: ${tf.surface || 'N/A'}`, 14, startY);
-      startY += 5;
-      doc.text(`Treatment: ${tf.procedure} | Restoration: ${tf.restoration}`, 14, startY);
-      startY += 5;
-      doc.text(`Clinical Notes: ${tf.notes}`, 14, startY);
-      
-      startY += 8;
-      doc.setDrawColor(200, 200, 200);
-      doc.line(14, startY - 4, 196, startY - 4);
-    });
-
-    doc.save(`Clinical_Tooth_Report_${new Date().toISOString().split('T')[0]}.pdf`);
-    addToast({ type: 'success', title: 'PDF Downloaded', message: 'Visual odontogram PDF generated successfully.' });
+    doc.save(`Clinical_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+    addToast({ type: 'success', title: 'PDF Downloaded', message: 'Clinical report PDF generated successfully.' });
   };
 
   const handlePrint = () => window.print();
@@ -863,12 +789,12 @@ export const Reports: React.FC = () => {
     });
     const mostAffectedTeethData = Object.entries(teethCounts).map(([name, count]) => ({ name, count })).sort((a,b) => b.count - a.count).slice(0, 5);
 
-    // 8. Dentist Performance
-    const dentistTxCounts: Record<string, number> = {};
+    // 8. Doctor Performance
+    const doctorTxCounts: Record<string, number> = {};
     procs.forEach((p: any) => {
-        dentistTxCounts[p.dentistName || 'Unknown'] = (dentistTxCounts[p.dentistName || 'Unknown'] || 0) + 1;
+        doctorTxCounts[p.doctorName || 'Unknown'] = (doctorTxCounts[p.doctorName || 'Unknown'] || 0) + 1;
     });
-    const dentistPerformanceData = Object.entries(dentistTxCounts).map(([name, count]) => ({ name, count })).sort((a,b) => b.count - a.count);
+    const doctorPerformanceData = Object.entries(doctorTxCounts).map(([name, count]) => ({ name, count })).sort((a,b) => b.count - a.count);
 
     // 9. Demographics — scoped to patients active in the selected period
     const periodPatientIds = new Set<string>();
@@ -903,7 +829,7 @@ export const Reports: React.FC = () => {
       diseaseDistributionData,
       diseaseSeverityData,
       mostAffectedTeethData,
-      dentistPerformanceData,
+      doctorPerformanceData,
       demographicsGenderData,
       demographicsAgeData,
       kpis: {
@@ -915,7 +841,7 @@ export const Reports: React.FC = () => {
     };
   }, [reportData]);
 
-  // Clinic-wide executive analysis (revenue, appointment health, dentist contribution)
+  // Clinic-wide executive analysis (revenue, appointment health, doctor contribution)
   const clinicAnalysis = useMemo(() => {
     if (!reportData) return null;
     const appts = reportData.raw.appointments || [];
@@ -939,14 +865,14 @@ export const Reports: React.FC = () => {
     appts.forEach((a: any) => servedPatientIds.add(a.patientId));
     visits.forEach((v: any) => servedPatientIds.add(v.patientId));
 
-    const dentistMap: Record<string, { treatments: number; revenue: number }> = {};
+    const doctorMap: Record<string, { treatments: number; revenue: number }> = {};
     completedTreatments.forEach((p: any) => {
-      const key = p.assignedDentistName || 'Unassigned';
-      dentistMap[key] = dentistMap[key] || { treatments: 0, revenue: 0 };
-      dentistMap[key].treatments += 1;
-      dentistMap[key].revenue += Number(p.cost) || 0;
+      const key = p.assignedDoctorName || 'Unassigned';
+      doctorMap[key] = doctorMap[key] || { treatments: 0, revenue: 0 };
+      doctorMap[key].treatments += 1;
+      doctorMap[key].revenue += Number(p.cost) || 0;
     });
-    const dentistContribution = Object.entries(dentistMap)
+    const doctorContribution = Object.entries(doctorMap)
       .map(([name, v]) => ({ name, treatments: v.treatments, revenue: v.revenue }))
       .sort((a, b) => b.revenue - a.revenue);
 
@@ -977,7 +903,7 @@ export const Reports: React.FC = () => {
         { status: 'Cancelled', count: aCancelled, color: '#f97316' },
         { status: 'No Show', count: aNoShow, color: '#ef4444' },
       ],
-      dentistContribution,
+      doctorContribution,
       topRevenueProcedures,
     };
   }, [reportData]);
@@ -1034,7 +960,7 @@ export const Reports: React.FC = () => {
     apptTrendData, newVsReturningData, topTreatmentsData, 
     txStatusData, followUpData, kpis, 
     diseaseDistributionData, diseaseSeverityData, mostAffectedTeethData, 
-    dentistPerformanceData, demographicsGenderData, demographicsAgeData 
+    doctorPerformanceData, demographicsGenderData, demographicsAgeData 
   } = chartData;
   const isDataEmpty = kpis.totalAppointments === 0 && kpis.totalTreatments === 0 && kpis.followUpsDue === 0;
 
@@ -1066,7 +992,7 @@ export const Reports: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             {/* Minimal Pill Tab Switcher */}
-            {user?.role !== 'Other Dentist' && (
+            {user?.role !== 'Other Doctor' && (
               <div className="bg-slate-100/80 p-1 rounded-xl flex items-center shadow-inner w-full sm:w-auto">
                 <button
                   onClick={() => setMainTab('patient-reports')}
@@ -1230,7 +1156,7 @@ export const Reports: React.FC = () => {
                                               {visit.diagnosis}
                                             </span>
                                           )}
-                                          <span className="text-[10px] font-semibold text-slate-400">Dr. {visit.dentistName}</span>
+                                          <span className="text-[10px] font-semibold text-slate-400">Dr. {visit.doctorName}</span>
                                           {rxCount > 0 && (
                                             <span className="text-[10px] font-bold text-amber-600 flex items-center gap-0.5">
                                               <Pill className="w-3 h-3" /> {rxCount} Rx
@@ -1293,10 +1219,10 @@ export const Reports: React.FC = () => {
               </div>
             )}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-500 uppercase">Dentist</label>
-              <select value={selectedDentist} onChange={(e) => setSelectedDentist(e.target.value)} className="h-9 w-40 text-xs font-semibold rounded-xl border-slate-200 bg-slate-50 px-3 outline-none focus:ring-2 focus:ring-blue-100">
+              <label className="text-[10px] font-black text-slate-500 uppercase">Doctor</label>
+              <select value={selectedDoctor} onChange={(e) => setSelectedDoctor(e.target.value)} className="h-9 w-40 text-xs font-semibold rounded-xl border-slate-200 bg-slate-50 px-3 outline-none focus:ring-2 focus:ring-blue-100">
                 <option value="ALL">All Doctors</option>
-                {dentistsList.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                {doctorsList.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>
           </div>
@@ -1365,7 +1291,7 @@ export const Reports: React.FC = () => {
           {/* Financial & Utilization Tiles */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { label: 'Clinical Revenue', value: showFinancials ? `$${clinicAnalysis.clinicalRevenue.toLocaleString()}` : 'XXX', sub: `${clinicAnalysis.dentistContribution.reduce((s, d) => s + d.treatments, 0)} completed cases`, icon: Activity, color: 'text-blue-600', bg: 'bg-blue-50' },
+              { label: 'Clinical Revenue', value: showFinancials ? `$${clinicAnalysis.clinicalRevenue.toLocaleString()}` : 'XXX', sub: `${clinicAnalysis.doctorContribution.reduce((s, d) => s + d.treatments, 0)} completed cases`, icon: Activity, color: 'text-blue-600', bg: 'bg-blue-50' },
               { label: 'Pipeline Value', value: showFinancials ? `$${clinicAnalysis.pipelineValue.toLocaleString()}` : 'XXX', sub: 'All planned + done', icon: FilePlus2, color: 'text-indigo-600', bg: 'bg-indigo-50' },
               { label: 'Pending Value', value: showFinancials ? `$${clinicAnalysis.pendingValue.toLocaleString()}` : 'XXX', sub: 'Awaiting completion', icon: ShieldAlert, color: 'text-amber-600', bg: 'bg-amber-50' },
               { label: 'Patients Served', value: `${clinicAnalysis.patientsServed}`, sub: 'In this period', icon: Stethoscope, color: 'text-purple-600', bg: 'bg-purple-50' },
@@ -1383,7 +1309,7 @@ export const Reports: React.FC = () => {
             ))}
           </div>
 
-          {/* Appointment Health + Dentist Contribution */}
+          {/* Appointment Health + Doctor Contribution */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Appointment Health */}
             <div className="border border-slate-200 rounded-2xl p-5">
@@ -1445,25 +1371,25 @@ export const Reports: React.FC = () => {
             </div>
           </div>
 
-          {/* Dentist Revenue Contribution */}
-          {clinicAnalysis.dentistContribution.length > 0 && (
+          {/* Doctor Revenue Contribution */}
+          {clinicAnalysis.doctorContribution.length > 0 && (
             <div className="border border-slate-200 rounded-2xl overflow-hidden">
               <div className="px-5 pt-4 pb-1">
-                <h4 className="text-sm font-black text-slate-900">Dentist Revenue Contribution</h4>
+                <h4 className="text-sm font-black text-slate-900">Doctor Revenue Contribution</h4>
                 <p className="text-[11px] font-semibold text-slate-500">Completed treatment value per doctor</p>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-y border-slate-200 text-[10px] font-black text-slate-500 uppercase tracking-wider">
-                      <th className="py-2.5 px-5">Dentist</th>
+                      <th className="py-2.5 px-5">Doctor</th>
                       <th className="py-2.5 px-5">Cases Completed</th>
                       <th className="py-2.5 px-5">Revenue</th>
                       <th className="py-2.5 px-5">Share</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
-                    {clinicAnalysis.dentistContribution.map((d, idx) => {
+                    {clinicAnalysis.doctorContribution.map((d, idx) => {
                       const total = clinicAnalysis.clinicalRevenue || 1;
                       const share = Math.round((d.revenue / total) * 100);
                       return (
@@ -1736,7 +1662,7 @@ export const Reports: React.FC = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div className="font-bold text-slate-900">{tf.patientName}</div>
-                        <div className="text-[10px] text-slate-400">{tf.dentistName}</div>
+                        <div className="text-[10px] text-slate-400">{tf.doctorName}</div>
                       </td>
                       <td className="py-3 px-4 max-w-xs text-[11px] text-slate-600">
                         {tf.notes}
@@ -1922,14 +1848,14 @@ export const Reports: React.FC = () => {
               </ResponsiveContainer>
             </div>
           </Card>
-          {/* Chart 8: Dentist Performance */}
-          {selectedDentist === 'ALL' ? (
+          {/* Chart 8: Doctor Performance */}
+          {selectedDoctor === 'ALL' ? (
             <Card className="border border-slate-200 shadow-sm rounded-2xl p-6 lg:col-span-2">
-              <h3 className="text-sm font-black text-slate-900 mb-2">Dentist Performance (Treatments Completed)</h3>
+              <h3 className="text-sm font-black text-slate-900 mb-2">Doctor Performance (Treatments Completed)</h3>
               <p className="text-[11px] font-semibold text-slate-500 mb-6">Comparative productivity across all doctors for {dateRange}.</p>
               <div className="h-72 w-full text-xs font-semibold">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.dentistPerformanceData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart data={chartData.doctorPerformanceData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis dataKey="name" stroke="#94a3b8" tickLine={false} axisLine={false} />
                     <YAxis stroke="#94a3b8" tickLine={false} axisLine={false} />
@@ -1941,9 +1867,9 @@ export const Reports: React.FC = () => {
             </Card>
           ) : (
             <Card className="border border-slate-200 shadow-sm rounded-2xl p-6 lg:col-span-2">
-              <h3 className="text-sm font-black text-slate-900 mb-2">Dentist Filter Active</h3>
+              <h3 className="text-sm font-black text-slate-900 mb-2">Doctor Filter Active</h3>
               <p className="text-xs font-semibold text-slate-500">
-                Showing data for the selected doctor only. Switch to "All Doctors" to compare dentist-wise performance across the clinic.
+                Showing data for the selected doctor only. Switch to "All Doctors" to compare doctor-wise performance across the clinic.
               </p>
             </Card>
           )}
@@ -1999,212 +1925,7 @@ export const Reports: React.FC = () => {
         </div>
       )}
 
-      {/* 3D SINGLE TOOTH DETAILED VIEWER MODAL */}
-      <Dialog open={isToothModalOpen} onOpenChange={(open) => {
-        setIsToothModalOpen(open);
-        if (!open) setIsEditMode(false);
-      }}>
-        <DialogContent className="max-w-5xl p-0 overflow-hidden bg-white rounded-[24px] border-0 shadow-2xl">
-          <div className="flex h-[600px] flex-col lg:flex-row">
-            
-            {/* Left side: 3D Viewer */}
-            <div className="w-full lg:w-1/2 bg-slate-900 relative">
-              <div className="absolute top-6 left-6 z-10">
-                <div className="text-white/60 text-xs font-bold tracking-widest uppercase mb-1">Tooth Inspection</div>
-                <h3 className="text-white text-2xl font-black">
-                  FDI {selectedTooth}
-                </h3>
-                <p className="text-white/80 font-medium text-sm">
-                  {selectedTooth ? getToothName(selectedTooth) : ''}
-                </p>
-              </div>
-              
-              <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10">
-                <span className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white/70 text-xs font-bold border border-white/20">
-                  DRAG TO ROTATE IN 360°
-                </span>
-              </div>
 
-              {selectedTooth && (
-                <div className="w-32 h-32 mx-auto my-12 pointer-events-none">
-                  <Tooth
-                    num={selectedTooth}
-                    isSelected={true}
-                    draftState={{
-                      condition: draftCondition,
-                      surfaces: draftSurfaces,
-                      restoration: 'None'
-                    }}
-                    onClick={() => {}}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Right side: Details & History */}
-            <div className="w-full lg:w-1/2 p-8 flex flex-col h-full bg-slate-50 overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-black text-slate-800">Clinical Record</h2>
-                {(user?.role === 'dentist' || user?.role === 'admin') && (
-                  <Button 
-                    variant={isEditMode ? "default" : "outline"} 
-                    size="sm"
-                    className="rounded-xl font-bold"
-                    onClick={() => setIsEditMode(!isEditMode)}
-                  >
-                    <Pencil className="w-4 h-4 mr-2" />
-                    {isEditMode ? 'Cancel Edit' : 'Edit Odontogram'}
-                  </Button>
-                )}
-              </div>
-
-              {isEditMode ? (
-                <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex-1">
-                  <div>
-                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Condition</Label>
-                    <select 
-                      className="w-full p-3 rounded-xl border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 font-semibold text-slate-800"
-                      value={draftCondition}
-                      onChange={(e) => setDraftCondition(e.target.value)}
-                    >
-                      {DENTAL_CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Affected Surfaces</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {['M', 'O', 'D', 'B', 'L'].map(surface => (
-                        <button
-                          key={surface}
-                          onClick={() => {
-                            if (draftSurfaces.includes(surface as any)) {
-                              setDraftSurfaces(draftSurfaces.filter(s => s !== surface));
-                            } else {
-                              setDraftSurfaces([...draftSurfaces, surface as any]);
-                            }
-                          }}
-                          className={`w-10 h-10 rounded-xl font-bold transition-all ${
-                            draftSurfaces.includes(surface as any)
-                              ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-                              : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                          }`}
-                        >
-                          {surface}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Restoration</Label>
-                    <select 
-                      className="w-full p-3 rounded-xl border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 font-semibold text-slate-800"
-                      value={draftRestoration}
-                      onChange={(e) => setDraftRestoration(e.target.value)}
-                    >
-                      {DENTAL_RESTORATIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Procedure</Label>
-                    <select 
-                      className="w-full p-3 rounded-xl border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 font-semibold text-slate-800"
-                      value={draftProcedure}
-                      onChange={(e) => setDraftProcedure(e.target.value)}
-                    >
-                      {DENTAL_PROCEDURES.map(p => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Clinical Notes</Label>
-                    <textarea 
-                      className="w-full p-3 rounded-xl border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 font-semibold text-slate-800 min-h-[80px]"
-                      value={draftNotes}
-                      onChange={(e) => setDraftNotes(e.target.value)}
-                      placeholder="Add any specific clinical observations..."
-                    />
-                  </div>
-                  
-                  <div className="pt-4 mt-auto">
-                    <Button onClick={handleSaveToothDetails} className="w-full py-6 rounded-xl text-lg font-bold shadow-xl shadow-blue-600/20">
-                      Save Changes
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col">
-                  {/* Current Status */}
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
-                    <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                      <div>
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Current Condition</div>
-                        <div className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: CONDITION_COLORS[draftCondition] || '#ef4444' }}></span>
-                          {draftCondition}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Surfaces</div>
-                        <div className="font-bold text-slate-800 text-lg">
-                          {draftSurfaces.length > 0 ? draftSurfaces.join(', ') : 'None'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Restoration</div>
-                        <div className="font-bold text-slate-800">{draftRestoration}</div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Procedure</div>
-                        <div className="font-bold text-slate-800">{draftProcedure}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tooth History */}
-                  <div className="flex-1">
-                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-4">
-                      <History className="w-4 h-4" />
-                      Tooth History Log
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      {/* We show the latest edit from the draft data as the current record, or list from DB if we fetched full history */}
-                      <div className="relative pl-6 pb-4 border-l-2 border-blue-200 last:border-0 last:pb-0">
-                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-blue-600 border-4 border-slate-50"></div>
-                        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-bold text-slate-800">{draftProcedure !== 'None' ? draftProcedure : 'Clinical Exam'}</span>
-                            <span className="text-xs font-bold text-slate-400">{new Date().toLocaleDateString()}</span>
-                          </div>
-                          <p className="text-sm text-slate-600 mb-2">
-                            Found: <span className="font-semibold text-slate-800">{draftCondition}</span>
-                            {draftSurfaces.length > 0 && ` on surfaces [${draftSurfaces.join(',')}]`}
-                          </p>
-                          {draftNotes && (
-                            <div className="bg-slate-50 p-2.5 rounded-lg text-xs text-slate-600 italic">
-                              "{draftNotes}"
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <button 
-              onClick={() => setIsToothModalOpen(false)}
-              className="absolute top-4 right-4 z-50 p-2 bg-slate-200 hover:bg-slate-300 rounded-full transition-colors lg:hidden"
-            >
-              <X className="w-5 h-5 text-slate-700" />
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>)}
     </div>
   );

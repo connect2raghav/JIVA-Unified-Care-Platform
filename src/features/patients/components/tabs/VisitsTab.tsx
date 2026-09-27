@@ -17,7 +17,7 @@ export const VisitsTab: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-2">
                   <div>
                     <h4 className="text-sm font-black text-slate-800 leading-tight">
-                      Clinical Visit with {visit.dentistName}
+                      Clinical Visit with {visit.doctorName}
                     </h4>
                     <p className="text-xs text-slate-400 font-semibold mt-0.5">
                       {date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })} at{' '}

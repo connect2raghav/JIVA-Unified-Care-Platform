@@ -61,7 +61,7 @@ export const receptionService = {
         *,
         appointments (
           date_time,
-          dentist_id,
+          doctor_id,
           users ( name )
         )
       `);
@@ -97,15 +97,15 @@ export const receptionService = {
           emergencyContact: p.emergency_contact || '',
           avatarUrl: p.avatar_url,
           notes: p.notes,
-          assignedDentistId: latestAppt ? latestAppt.dentist_id : undefined,
-          assignedDentistName: latestAppt ? latestAppt.users?.name : undefined,
+          assignedDoctorId: latestAppt ? latestAppt.doctor_id : undefined,
+          assignedDoctorName: latestAppt ? latestAppt.users?.name : undefined,
         } as Patient;
       });
 
-      if (user && user.role === 'Other Dentist') {
+      if (user && user.role === 'Other Doctor') {
         const [apptsRes, visitsRes] = await Promise.all([
-          supabase.from('appointments').select('patient_id').eq('dentist_id', user.id),
-          supabase.from('visits').select('patient_id').eq('dentist_id', user.id)
+          supabase.from('appointments').select('patient_id').eq('doctor_id', user.id),
+          supabase.from('visits').select('patient_id').eq('doctor_id', user.id)
         ]);
         
         const allowedIds = new Set<string>();
@@ -126,14 +126,22 @@ export const receptionService = {
   // -------------------------------------------------------------
   getAllAppointments: async (): Promise<Appointment[]> => {
     try {
-      const { data, error } = await supabase.from('appointments').select('*, patients(name), users(name)');
+      const user = useAuthStore.getState().user;
+      const clinicId = user?.clinic_id || (user as any)?.clinicId;
+      
+      let query = supabase.from('appointments').select('*, patients(name), users(name)');
+      if (clinicId) {
+        query = query.eq('clinic_id', clinicId);
+      }
+      
+      const { data, error } = await query;
       if (error) return [];
       return data.map((d: any) => ({
         id: d.id,
         patientId: d.patient_id,
         patientName: d.patients?.name || d.patient_name || 'Registered Patient',
-        dentistId: d.dentist_id,
-        dentistName: d.users?.name || d.dentist_name || 'Dr. Prasad Patil',
+        physicianId: d.doctor_id,
+        physicianName: d.users?.name || d.doctor_name || 'Dr. Prasad Patil',
         dateTime: d.date_time,
         durationMinutes: d.duration_minutes,
         status: d.status,
@@ -156,8 +164,9 @@ export const receptionService = {
       const { data, error } = await supabase
         .from('appointments')
         .insert([{
+          clinic_id: newAppt.clinicId,
           patient_id: newAppt.patientId,
-          dentist_id: newAppt.dentistId,
+          doctor_id: newAppt.physicianId || (newAppt as any).doctorId,
           date_time: newAppt.dateTime,
           duration_minutes: newAppt.durationMinutes,
           status: newAppt.status,
@@ -210,13 +219,21 @@ export const receptionService = {
   // -------------------------------------------------------------
   getAllFollowUps: async (): Promise<FollowUp[]> => {
     try {
-      const { data, error } = await supabase.from('follow_ups').select('*, patients(name), users(name)');
+      const user = useAuthStore.getState().user;
+      const clinicId = user?.clinic_id || (user as any)?.clinicId;
+      
+      let query = supabase.from('follow_ups').select('*, patients(name), users(name)');
+      if (clinicId) {
+        query = query.eq('clinic_id', clinicId);
+      }
+
+      const { data, error } = await query;
       if (error) return [];
       return data.map((d: any) => ({
         id: d.id,
         patientId: d.patient_id,
-        dentistId: d.dentist_id,
-        dentistName: d.users?.name || d.dentist_name || 'Dr. Prasad Patil',
+        doctorId: d.doctor_id,
+        doctorName: d.users?.name || d.doctor_name || 'Dr. Prasad Patil',
         dueDate: d.due_date,
         reason: d.reason,
         status: d.status,
@@ -239,7 +256,7 @@ export const receptionService = {
         .from('follow_ups')
         .insert([{
           patient_id: newFollow.patientId,
-          dentist_id: newFollow.dentistId,
+          doctor_id: newFollow.doctorId,
           due_date: newFollow.dueDate,
           reason: newFollow.reason,
           status: newFollow.status,

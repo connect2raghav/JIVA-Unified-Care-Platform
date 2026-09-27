@@ -52,8 +52,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
   const [medAlertsText, setMedAlertsText] = useState('');
   const [emergencyName, setEmergencyName] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
-  const [assignedDentistName, setAssignedDentistName] = useState('');
-  const [assignedDentistId, setAssignedDentistId] = useState('');
+  const [assignedDoctorName, setAssignedDoctorName] = useState('');
+  const [assignedDoctorId, setAssignedDoctorId] = useState('');
   const [notes, setNotes] = useState('');
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -92,8 +92,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
         phone: emergencyPhone,
         relationship: 'Emergency Contact',
       },
-      assignedDentistId,
-      assignedDentistName,
+      assignedDoctorId,
+      assignedDoctorName,
       notes,
     };
 
@@ -118,8 +118,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
       setMedAlertsText('');
       setEmergencyName('');
       setEmergencyPhone('');
-      setAssignedDentistName('');
-      setAssignedDentistId('');
+      setAssignedDoctorName('');
+      setAssignedDoctorId('');
       setNotes('');
 
       if (onSuccess) onSuccess(res.data);
@@ -387,33 +387,33 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Assigned Dentist side-by-side */}
+                  {/* Assigned Doctor side-by-side */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Assigned Dentist Name */}
+                    {/* Assigned Doctor Name */}
                     <div className="space-y-1.5">
-                      <Label htmlFor="reg-dentist-name" className="text-xs font-bold text-slate-500 dark:text-slate-400">Assigned Dentist Name</Label>
+                      <Label htmlFor="reg-doctor-name" className="text-xs font-bold text-slate-500 dark:text-slate-400">Assigned Doctor Name</Label>
                       <div className="relative group">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 transition-colors group-focus-within:text-red-800 dark:group-focus-within:text-red-400" />
                         <Input
-                          id="reg-dentist-name"
+                          id="reg-doctor-name"
                           placeholder="Dr. Name"
-                          value={assignedDentistName}
-                          onChange={(e) => setAssignedDentistName(e.target.value)}
+                          value={assignedDoctorName}
+                          onChange={(e) => setAssignedDoctorName(e.target.value)}
                           className="pl-10 h-11 rounded-xl border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-800 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-red-800/20 focus-visible:border-red-800 transition-all font-medium text-slate-800 dark:text-slate-200 text-sm"
                         />
                       </div>
                     </div>
 
-                    {/* Assigned Dentist ID */}
+                    {/* Assigned Doctor ID */}
                     <div className="space-y-1.5">
-                      <Label htmlFor="reg-dentist-id" className="text-xs font-bold text-slate-500 dark:text-slate-400">Assigned Dentist ID</Label>
+                      <Label htmlFor="reg-doctor-id" className="text-xs font-bold text-slate-500 dark:text-slate-400">Assigned Doctor ID</Label>
                       <div className="relative group">
                         <UserCheck className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 transition-colors group-focus-within:text-red-800 dark:group-focus-within:text-red-400" />
                         <Input
-                          id="reg-dentist-id"
+                          id="reg-doctor-id"
                           placeholder="ID (optional)"
-                          value={assignedDentistId}
-                          onChange={(e) => setAssignedDentistId(e.target.value)}
+                          value={assignedDoctorId}
+                          onChange={(e) => setAssignedDoctorId(e.target.value)}
                           className="pl-10 h-11 rounded-xl border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-800 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-red-800/20 focus-visible:border-red-800 transition-all font-medium text-slate-800 dark:text-slate-200 text-sm"
                         />
                       </div>

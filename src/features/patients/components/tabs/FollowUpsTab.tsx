@@ -34,8 +34,8 @@ export const FollowUpsTab: React.FC = () => {
     setIsSubmitting(true);
     const res = await receptionService.scheduleFollowUp({
       patientId: selectedPatient.id,
-      dentistId: user?.id || 'dentist-1',
-      dentistName: user?.name || 'Dr. Prasad Patil',
+      doctorId: user?.id || 'doctor-1',
+      doctorName: user?.name || 'Dr. Prasad Patil',
       dueDate,
       reason,
       status: 'Pending',
@@ -162,7 +162,7 @@ export const FollowUpsTab: React.FC = () => {
                   <div className="flex items-center gap-2.5 text-[10px] text-slate-400 font-bold">
                     <span className="flex items-center gap-1">
                       <User className="w-3.5 h-3.5" />
-                      Assigned: {fu.dentistName}
+                      Assigned: {fu.doctorName}
                     </span>
                     <span>•</span>
                     <span className={new Date(fu.dueDate) < new Date() && fu.status !== 'Completed' ? 'text-red-600' : ''}>

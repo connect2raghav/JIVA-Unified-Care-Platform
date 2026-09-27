@@ -6,6 +6,7 @@
  * All queries scoped by clinic_id via Supabase RLS.
  */
 import { supabase } from '@/lib/supabaseClient';
+import { useAuthStore } from '@/store/useAuthStore';
 import type {
   EmergencyRequest,
   EmergencyStatus,
@@ -27,7 +28,7 @@ function mapEmergencyRow(row: any): EmergencyRequest {
     priority: row.priority as EmergencyPriority,
     status: row.status as EmergencyStatus,
     assignedAmbulanceId: row.assigned_ambulance_id ?? undefined,
-    assignedAmbulanceVehicle: row.assigned_ambulance_vehicle ?? undefined,
+    assignedAmbulanceVehicle: row.ambulances?.vehicle_number ?? undefined,
     pickupLocation: row.pickup_location,
     destinationFacility: row.destination_facility ?? undefined,
     dispatchedAt: row.dispatched_at ?? undefined,
@@ -56,9 +57,12 @@ function mapAmbulanceRow(row: any): Ambulance {
 
 export const emergencyService = {
   async listRequests(): Promise<EmergencyRequest[]> {
+    const user = useAuthStore.getState().user;
+    const clinicId = user?.clinic_id || (user as any)?.clinicId;
     const { data, error } = await supabase
       .from('emergency_requests')
-      .select('*')
+      .select('*, ambulances(vehicle_number)')
+      .eq('clinic_id', clinicId)
       .order('created_at', { ascending: false });
     if (error) throw error;
     return (data ?? []).map(mapEmergencyRow);
@@ -104,7 +108,6 @@ export const emergencyService = {
       .from('emergency_requests')
       .update({
         assigned_ambulance_id: ambulanceId,
-        assigned_ambulance_vehicle: vehicleNumber,
         status: 'Dispatched',
         dispatched_at: new Date().toISOString(),
       })
@@ -125,9 +128,12 @@ export const emergencyService = {
   // ─── Ambulances ──────────────────────────────────────────────
 
   async listAmbulances(): Promise<Ambulance[]> {
+    const user = useAuthStore.getState().user;
+    const clinicId = user?.clinic_id || (user as any)?.clinicId;
     const { data, error } = await supabase
       .from('ambulances')
       .select('*')
+      .eq('clinic_id', clinicId)
       .order('vehicle_number');
     if (error) throw error;
     return (data ?? []).map(mapAmbulanceRow);

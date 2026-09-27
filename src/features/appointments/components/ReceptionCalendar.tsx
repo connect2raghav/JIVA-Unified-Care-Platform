@@ -57,15 +57,15 @@ export const ReceptionCalendar: React.FC = () => {
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
   const [newNotes, setNewNotes] = useState('');
-  const [newDentistId, setNewDentistId] = useState('');
-  const [dentists, setDentists] = useState<any[]>([]);
+  const [newDoctorId, setNewDoctorId] = useState('');
+  const [doctors, setDoctors] = useState<any[]>([]);
 
   // Delete/Cancel Modal state
   const [cancelAppt, setCancelAppt] = useState<Appointment | null>(null);
 
   useEffect(() => {
     loadAppointments();
-    loadDentists();
+    loadDoctors();
 
     const interval = setInterval(() => {
       loadAppointments();
@@ -74,7 +74,7 @@ export const ReceptionCalendar: React.FC = () => {
     return () => clearInterval(interval);
   }, [user?.clinic_id]);
 
-  const loadDentists = async () => {
+  const loadDoctors = async () => {
     try {
       const { supabase } = await import('@/lib/supabaseClient');
       let query = supabase.from('users').select('*');
@@ -84,12 +84,12 @@ export const ReceptionCalendar: React.FC = () => {
       const { data, error } = await query;
       if (!error && data) {
         const filtered = data.filter((u: any) => 
-          (u.role === 'Dentist' || u.role === 'Other Dentist') && u.is_active !== false
+          (u.role === 'Doctor' || u.role === 'Other Doctor') && u.is_active !== false
         );
-        setDentists(filtered);
+        setDoctors(filtered);
       }
     } catch (e) {
-      console.error('Failed to fetch dentists', e);
+      console.error('Failed to fetch doctors', e);
     }
   };
 
@@ -134,7 +134,7 @@ export const ReceptionCalendar: React.FC = () => {
     const res = await receptionService.updateAppointment(rescheduleAppt.id, {
       dateTime: formattedDateTime,
       notes: newNotes,
-      dentistId: newDentistId
+      doctorId: newDoctorId
     });
 
     if (res.success) {
@@ -203,8 +203,8 @@ export const ReceptionCalendar: React.FC = () => {
 
   const displayedAppts = getFilteredAppointments().sort((a, b) => {
     // Current user's appointments come first
-    const aIsUser = a.dentistId === user?.id || a.dentistName === user?.name;
-    const bIsUser = b.dentistId === user?.id || b.dentistName === user?.name;
+    const aIsUser = a.physicianId === user?.id || a.physicianName === user?.name;
+    const bIsUser = b.physicianId === user?.id || b.physicianName === user?.name;
     if (aIsUser && !bIsUser) return -1;
     if (!aIsUser && bIsUser) return 1;
     // Then sort chronologically
@@ -231,7 +231,7 @@ export const ReceptionCalendar: React.FC = () => {
     setNewDate(appt.dateTime.split('T')[0]);
     setNewTime(appt.dateTime.split('T')[1].slice(0, 5));
     setNewNotes(appt.notes || '');
-    setNewDentistId(appt.dentistId || '');
+    setNewDoctorId(appt.doctorId || '');
   };
 
   return (
@@ -369,8 +369,8 @@ export const ReceptionCalendar: React.FC = () => {
             const time = new Date(appt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const date = new Date(appt.dateTime).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
             
-            // Check if the current user is an 'Other Dentist' looking at someone else's appointment
-            const isOtherDentistViewingForeignAppt = user?.role === 'Other Dentist' && appt.dentistId !== user?.id;
+            // Check if the current user is an 'Other Doctor' looking at someone else's appointment
+            const isOtherDoctorViewingForeignAppt = user?.role === 'Other Doctor' && appt.doctorId !== user?.id;
 
             return (
               <Card 
@@ -387,9 +387,9 @@ export const ReceptionCalendar: React.FC = () => {
                   <div className="space-y-0.5 text-xs">
                     <div className="flex items-center flex-wrap gap-2">
                       <h4 className="font-black text-sm text-slate-900 leading-snug">
-                        {isOtherDentistViewingForeignAppt ? "Busy / Reserved Slot" : appt.patientName}
+                        {isOtherDoctorViewingForeignAppt ? "Busy / Reserved Slot" : appt.patientName}
                       </h4>
-                      {!isOtherDentistViewingForeignAppt && (
+                      {!isOtherDoctorViewingForeignAppt && (
                         <span className="text-[10px] text-slate-400 font-semibold">{appt.reason}</span>
                       )}
                     </div>
@@ -397,7 +397,7 @@ export const ReceptionCalendar: React.FC = () => {
                       {time} {viewMode !== 'DAY' && <span className="text-slate-455">({date})</span>}
                     </p>
                     <p className="text-slate-500 font-semibold leading-normal">
-                      Doctor: {appt.dentistName} {!isOtherDentistViewingForeignAppt && appt.notes && `• Note: "${appt.notes}"`}
+                      Doctor: {appt.physicianName} {!isOtherDoctorViewingForeignAppt && appt.notes && `• Note: "${appt.notes}"`}
                     </p>
                   </div>
                 </div>
@@ -411,10 +411,10 @@ export const ReceptionCalendar: React.FC = () => {
 
                   {/* Actions shortcuts */}
                   {/* Actions shortcuts */}
-                  {!isOtherDentistViewingForeignAppt && (user?.role === 'Dentist' || user?.role === 'Other Dentist') && appt.status !== 'Cancelled' && appt.status !== 'Completed' && (
+                  {!isOtherDoctorViewingForeignAppt && (user?.role === 'Doctor' || user?.role === 'Other Doctor') && appt.status !== 'Cancelled' && appt.status !== 'Completed' && (
                     <Button
                       size="sm"
-                      onClick={() => navigate(`/${user?.role === 'Other Dentist' ? 'other-dentist' : 'dentist'}/visit/${appt.patientId}?appointmentId=${appt.id}`)}
+                      onClick={() => navigate(`/${user?.role === 'Other Doctor' ? 'other-doctor' : 'doctor'}/visit/${appt.patientId}?appointmentId=${appt.id}`)}
                       className="h-8.5 rounded-lg text-[10px] font-bold bg-red-600 hover:bg-red-700 text-white gap-1.5 shadow"
                     >
                       <Play className="w-3.5 h-3.5" />
@@ -422,7 +422,7 @@ export const ReceptionCalendar: React.FC = () => {
                     </Button>
                   )}
 
-                  {!isOtherDentistViewingForeignAppt && (appt.status as string) !== 'Completed' && (appt.status as string) !== 'Cancelled' && (
+                  {!isOtherDoctorViewingForeignAppt && (appt.status as string) !== 'Completed' && (appt.status as string) !== 'Cancelled' && (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -434,7 +434,7 @@ export const ReceptionCalendar: React.FC = () => {
                     </Button>
                   )}
 
-                  {!isOtherDentistViewingForeignAppt && (appt.status as string) !== 'Cancelled' && (
+                  {!isOtherDoctorViewingForeignAppt && (appt.status as string) !== 'Cancelled' && (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -507,17 +507,17 @@ export const ReceptionCalendar: React.FC = () => {
                   />
                 </div>
 
-                {/* Dentist Selection */}
+                {/* Doctor Selection */}
                 <div className="space-y-1">
                   <Label className="text-xs font-extrabold text-slate-500">Attending Doctor *</Label>
                   <select
-                    value={newDentistId}
-                    onChange={(e) => setNewDentistId(e.target.value)}
+                    value={newDoctorId}
+                    onChange={(e) => setNewDoctorId(e.target.value)}
                     className="h-10 w-full rounded-xl border border-slate-200 px-3 bg-white text-xs font-semibold"
                     required
                   >
                     <option value="" disabled>Select a doctor</option>
-                    {dentists.map((d) => (
+                    {doctors.map((d) => (
                       <option key={d.id} value={d.id}>{d.name}</option>
                     ))}
                   </select>

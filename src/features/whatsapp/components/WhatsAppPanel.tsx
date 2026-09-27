@@ -39,7 +39,7 @@ const TEMPLATES = [
   { id: 'follow-up', name: 'Follow-up Check', icon: Bell,
     text: 'Hi {name}, it\'s been a week since your last visit. How are you feeling? If you have any concerns about your treatment, please don\'t hesitate to reach out. We\'re here to help!' },
   { id: 'treatment-complete', name: 'Treatment Complete', icon: CheckCheck,
-    text: 'Dear {name}, your treatment has been completed successfully. Please follow the aftercare instructions provided by your dentist. Schedule your next follow-up visit within 2 weeks.' },
+    text: 'Dear {name}, your treatment has been completed successfully. Please follow the aftercare instructions provided by your doctor. Schedule your next follow-up visit within 2 weeks.' },
   { id: 'billing', name: 'Billing Reminder', icon: FileText,
     text: 'Hi {name}, this is a reminder regarding your pending balance of ₹{amount}. Please visit the clinic or use our online payment portal to clear your dues. Thank you!' },
   { id: 'happy-birthday', name: 'Happy Birthday', icon: Star,

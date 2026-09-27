@@ -61,7 +61,7 @@ export const PatientDirectory: React.FC = () => {
       'Mobile Number': p.phone,
       'Date of Birth': p.dateOfBirth,
       'Gender': p.gender,
-      'Attending Physician': (p as any).assignedDentistName || (p as any).physicianName || 'Unassigned',
+      'Attending Physician': (p as any).assignedDoctorName || (p as any).physicianName || 'Unassigned',
       'Allergies': p.allergies?.join(', ') || 'None',
       'Medical History': p.medicalHistory?.join(', ') || 'None',
       'Date Registered': p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'
@@ -99,8 +99,8 @@ export const PatientDirectory: React.FC = () => {
       return a.name.localeCompare(b.name);
     }
     if (sortField === 'doctor') {
-      const docA = (a as any).assignedDentistName || (a as any).physicianName || 'Unassigned';
-      const docB = (b as any).assignedDentistName || (b as any).physicianName || 'Unassigned';
+      const docA = (a as any).assignedDoctorName || (a as any).physicianName || 'Unassigned';
+      const docB = (b as any).assignedDoctorName || (b as any).physicianName || 'Unassigned';
       return docA.localeCompare(docB) || a.name.localeCompare(b.name);
     }
     const idA = a.displayId || a.id;
@@ -244,7 +244,7 @@ export const PatientDirectory: React.FC = () => {
                       {patient.gender}
                     </TableCell>
                     <TableCell className="text-xs font-semibold text-slate-700">
-                      {(patient as any).assignedDentistName || (patient as any).physicianName || 'Unassigned'}
+                      {(patient as any).assignedDoctorName || (patient as any).physicianName || 'Unassigned'}
                     </TableCell>
                     <TableCell>
                       {patient.allergies && patient.allergies.length > 0 ? (

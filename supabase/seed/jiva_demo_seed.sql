@@ -105,5 +105,32 @@ BEGIN
     (_clinic_id, 'Jayadeva Institute of Cardiology','ICU',            'Jayanagar 9th Block, Bangalore 560069',       '+91 80 2653 4400', 'info@jayadeva.org',     '5.5 km', 50, true,  '24/7',          ARRAY['Cardiology','Interventional Cardiology','CICU'])
   ON CONFLICT DO NOTHING;
 
+  -- ─── Appointments ──────────────────────────────────────────
+  -- We fetch a couple of patient UUIDs to tie the appointments
+  DECLARE
+    _patient1 uuid;
+    _patient2 uuid;
+  BEGIN
+    SELECT id INTO _patient1 FROM public.patients WHERE email = 'aditi@example.com' LIMIT 1;
+    SELECT id INTO _patient2 FROM public.patients WHERE email = 'ravi.k@example.com' LIMIT 1;
+    
+    IF _patient1 IS NOT NULL THEN
+      INSERT INTO public.appointments (clinic_id, patient_id, patient_name, physician_id, physician_name, date_time, duration_minutes, status, reason, triage_priority)
+      VALUES
+        (_clinic_id, _patient1, 'Aditi Sharma', 'dr-001', 'Dr. Rajesh Kapoor', CURRENT_TIMESTAMP + interval '1 day', 30, 'Scheduled', 'Routine checkup', 'Routine'),
+        (_clinic_id, _patient1, 'Aditi Sharma', 'dr-002', 'Dr. Ananya Mehta', CURRENT_TIMESTAMP - interval '10 days', 30, 'Completed', 'Fever and cough', 'Urgent');
+    END IF;
+
+    IF _patient2 IS NOT NULL THEN
+      INSERT INTO public.appointments (clinic_id, patient_id, patient_name, physician_id, physician_name, date_time, duration_minutes, status, reason, triage_priority)
+      VALUES
+        (_clinic_id, _patient2, 'Ravi Kumar', 'dr-001', 'Dr. Rajesh Kapoor', CURRENT_TIMESTAMP + interval '2 hours', 45, 'In Progress', 'Diabetes follow-up', 'Urgent');
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      RAISE NOTICE 'Skipped appointments seed, possibly patients not found';
+  END;
+
   RAISE NOTICE 'JIVA seed data loaded for clinic %', _clinic_id;
 END $$;
+

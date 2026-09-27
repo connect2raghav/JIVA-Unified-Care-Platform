@@ -254,7 +254,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
       doc.setTextColor(80);
-      doc.text(`Type: ${visit.visitType || 'General'}  |  Doctor: ${visit.dentistName}  |  Status: ${visit.status}`, margin, y);
+      doc.text(`Type: ${visit.visitType || 'General'}  |  Doctor: ${visit.doctorName}  |  Status: ${visit.status}`, margin, y);
       y += 6;
 
       // Complaint & Diagnosis
@@ -389,7 +389,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
     // Footer
     doc.setFontSize(7);
     doc.setTextColor(150);
-    doc.text('This is a computer-generated clinical report. Please verify with the attending dentist.', margin, 290);
+    doc.text('This is a computer-generated clinical report. Please verify with the attending doctor.', margin, 290);
     
     return doc;
   };
@@ -403,7 +403,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
     if (redirectParam === 'appointments') {
       setTimeout(() => {
         const pathSegments = window.location.pathname.split('/');
-        const rolePrefix = pathSegments[1] || 'dentist';
+        const rolePrefix = pathSegments[1] || 'doctor';
         navigate(`/${rolePrefix}/appointments`);
       }, 1000);
     }
@@ -563,77 +563,6 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
           </div>
         </div>
 
-        {/* ===== MAIN ODONTOGRAM ===== */}
-        {!visitId && (
-          <div className="mx-10 mb-6 rounded-xl border border-slate-200 overflow-hidden">
-            <div className="bg-slate-50 px-5 py-2.5 border-b border-slate-200">
-              <h3 className="text-xs font-black text-slate-700 uppercase tracking-wider">Current Odontogram Status</h3>
-            </div>
-            <div className="p-5 space-y-4">
-              {/* Upper Arch */}
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-2">Upper Maxillary (18–28)</p>
-                <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${UPPER_TEETH.length}, 1fr)` }}>
-                  {UPPER_TEETH.map(num => {
-                    const rec = currentToothState[num];
-                    const cond = rec?.condition || 'Healthy';
-                    return (
-                      <div
-                        key={num}
-                        className="rounded-lg border text-center py-1.5 transition-all"
-                        style={{
-                          backgroundColor: CONDITION_BG[cond] || '#fff',
-                          borderColor: CONDITION_BORDER[cond] || '#e2e8f0'
-                        }}
-                      >
-                        <span className="text-[10px] font-extrabold text-slate-700 block">{num}</span>
-                        {cond !== 'Healthy' && (
-                          <span className="text-[6px] font-black text-slate-500 block truncate px-0.5">{cond.split(' ')[0]}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Lower Arch */}
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-2">Lower Mandibular (48–38)</p>
-                <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${LOWER_TEETH.length}, 1fr)` }}>
-                  {LOWER_TEETH.map(num => {
-                    const rec = currentToothState[num];
-                    const cond = rec?.condition || 'Healthy';
-                    return (
-                      <div
-                        key={num}
-                        className="rounded-lg border text-center py-1.5 transition-all"
-                        style={{
-                          backgroundColor: CONDITION_BG[cond] || '#fff',
-                          borderColor: CONDITION_BORDER[cond] || '#e2e8f0'
-                        }}
-                      >
-                        <span className="text-[10px] font-extrabold text-slate-700 block">{num}</span>
-                        {cond !== 'Healthy' && (
-                          <span className="text-[6px] font-black text-slate-500 block truncate px-0.5">{cond.split(' ')[0]}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100">
-                {Object.entries(CONDITION_BG).filter(([k]) => k !== 'Healthy').map(([cond, bg]) => (
-                  <div key={cond} className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded" style={{ backgroundColor: bg, border: `1px solid ${CONDITION_BORDER[cond]}` }} />
-                    <span className="text-[9px] font-bold text-slate-500">{cond}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* ===== VISIT-BY-VISIT SECTIONS ===== */}
         {displayVisits.length === 0 ? (
@@ -660,7 +589,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
                         Visit — {formatDate(visit.dateTime)}
                       </h3>
                       <p className="text-[10px] font-semibold text-slate-500">
-                        {visit.visitType || 'General'} • Dr. {visit.dentistName} • {formatTime(visit.dateTime)}
+                        {visit.visitType || 'General'} • Dr. {visit.doctorName} • {formatTime(visit.dateTime)}
                       </p>
                     </div>
                   </div>
@@ -708,61 +637,6 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
                     </div>
                   )}
 
-                  {/* Per-Visit Odontogram Changes */}
-                  {visitToothRecords.length > 0 && (
-                    <div>
-                      <h4 className="text-[10px] font-black text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <Stethoscope className="w-3 h-3 text-red-600" />
-                        Odontogram Changes This Visit
-                      </h4>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                          <thead>
-                            <tr className="bg-slate-50 text-[9px] font-black text-slate-500 uppercase tracking-wider">
-                              <th className="py-2 px-3 border-b border-slate-200">Tooth #</th>
-                              <th className="py-2 px-3 border-b border-slate-200">Tooth Description</th>
-                              <th className="py-2 px-3 border-b border-slate-200">Diagnosis / Condition</th>
-                              <th className="py-2 px-3 border-b border-slate-200">Surfaces</th>
-                              <th className="py-2 px-3 border-b border-slate-200">Restoration / Treatment</th>
-                              <th className="py-2 px-3 border-b border-slate-200">Patient & Doctor</th>
-                              <th className="py-2 px-3 border-b border-slate-200">Clinical Findings & Notes</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {visitToothRecords.map((tr: any) => (
-                              <tr key={tr.id} className="hover:bg-slate-50/50">
-                                <td className="py-2 px-3 text-xs font-black text-slate-700">{tr.toothNumber}</td>
-                                <td className="py-2 px-3 text-[11px] font-semibold text-slate-600">{getToothName(tr.toothNumber)}</td>
-                                <td className="py-2 px-3">
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{
-                                    backgroundColor: CONDITION_BG[tr.condition] || '#f8fafc',
-                                    color: '#374151',
-                                    border: `1px solid ${CONDITION_BORDER[tr.condition] || '#e2e8f0'}`
-                                  }}>
-                                    {tr.condition}
-                                  </span>
-                                </td>
-                                <td className="py-2 px-3 text-[11px] font-semibold text-slate-600">{tr.surface || '-'}</td>
-                                <td className="py-2 px-3 text-[11px] font-semibold text-slate-600">
-                                  <div className="flex flex-col">
-                                    <span>{tr.restoration || 'None'}</span>
-                                    {tr.procedure && tr.procedure !== tr.restoration && <span className="text-slate-400 text-[9px]">{tr.procedure}</span>}
-                                  </div>
-                                </td>
-                                <td className="py-2 px-3 text-[11px] font-semibold text-slate-600">
-                                  <div className="flex flex-col">
-                                    <span className="font-bold">{patientName}</span>
-                                    <span className="text-slate-400 text-[10px]">{visit.dentistName || clinicName}</span>
-                                  </div>
-                                </td>
-                                <td className="py-2 px-3 text-[11px] font-semibold text-slate-500 max-w-[200px] truncate" title={tr.notes}>{tr.notes || 'Documented during clinical examination'}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Prescriptions */}
                   {rxList.length > 0 && (
@@ -897,7 +771,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
                   <div key={fu.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                     <div>
                       <p className="text-xs font-bold text-slate-800">{formatDate(fu.dueDate)}</p>
-                      <p className="text-[11px] font-semibold text-slate-500">{fu.reason} • Dr. {fu.dentistName}</p>
+                      <p className="text-[11px] font-semibold text-slate-500">{fu.reason} • Dr. {fu.doctorName}</p>
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       fu.status === 'Completed' ? 'bg-emerald-50 text-emerald-700' :
@@ -921,7 +795,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ patientId: propPatie
                 This is a computer-generated clinical report from {clinicName}.
               </p>
               <p className="text-[9px] font-semibold text-slate-400">
-                Please verify all clinical details with the attending dentist before making treatment decisions.
+                Please verify all clinical details with the attending doctor before making treatment decisions.
               </p>
             </div>
             <div className="text-right">

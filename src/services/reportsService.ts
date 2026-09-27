@@ -11,7 +11,7 @@ export interface DiseaseRecord {
   stage: string;
   status: 'Active' | 'Under Treatment' | 'Healing' | 'Resolved' | 'Recurring' | 'Under Observation';
   dateDiagnosed: string;
-  dentistName: string;
+  doctorName: string;
   notes?: string;
 }
 
@@ -28,7 +28,7 @@ export const reportsService = {
     dateRange: string;
     startDate?: string;
     endDate?: string;
-    dentist?: string;
+    doctor?: string;
     patient?: string;
     treatment?: string;
     disease?: string;
@@ -57,21 +57,21 @@ export const reportsService = {
       id: p.id, name: p.name, email: p.email, phone: p.phone, dateOfBirth: p.date_of_birth, gender: p.gender, createdAt: p.created_at
     }));
     let appointmentsList: Appointment[] = (appointmentsData || []).map(a => ({
-      id: a.id, patientId: a.patient_id, dentistId: a.dentist_id, dateTime: a.date_time, durationMinutes: a.duration_minutes, status: a.status, reason: a.reason, patientName: 'Unknown', dentistName: 'Unknown'
+      id: a.id, patientId: a.patient_id, doctorId: a.doctor_id, dateTime: a.date_time, durationMinutes: a.duration_minutes, status: a.status, reason: a.reason, patientName: 'Unknown', doctorName: 'Unknown'
     }));
     appointmentsList.forEach(a => {
        const p = patientsList.find(pat => pat.id === a.patientId);
        if (p) a.patientName = p.name;
-       const u = (usersData || []).find(user => user.id === a.dentistId);
-       if (u) a.dentistName = u.name;
+       const u = (usersData || []).find(user => user.id === a.doctorId);
+       if (u) a.doctorName = u.name;
     });
 
     let visitsList: Visit[] = (visitsData || []).map(v => ({
-      id: v.id, patientId: v.patient_id, dateTime: v.date_time, dentistId: v.dentist_id, chiefComplaint: v.chief_complaint, diagnosis: v.diagnosis, dentistName: 'Unknown'
+      id: v.id, patientId: v.patient_id, dateTime: v.date_time, doctorId: v.doctor_id, chiefComplaint: v.chief_complaint, diagnosis: v.diagnosis, doctorName: 'Unknown'
     }));
     visitsList.forEach(v => {
-       const u = (usersData || []).find(user => user.id === v.dentistId);
-       if (u) v.dentistName = u.name;
+       const u = (usersData || []).find(user => user.id === v.doctorId);
+       if (u) v.doctorName = u.name;
     });
 
     let treatmentPlansList: TreatmentPlan[] = (treatmentPlansData || []).map(tp => ({
@@ -86,19 +86,19 @@ export const reportsService = {
            description: proc.description,
            cost: proc.cost,
            status: proc.status,
-           assignedDentistId: proc.assigned_dentist_id,
-           assignedDentistName: proc.assigned_dentist_name
+           assignedDoctorId: proc.assigned_doctor_id,
+           assignedDoctorName: proc.assigned_doctor_name
          });
        }
     });
 
     let diseasesList: DiseaseRecord[] = [];
     let followUpsList: FollowUp[] = (followUpsData || []).map(f => ({
-      id: f.id, patientId: f.patient_id, dentistId: f.dentist_id, dueDate: f.due_date, reason: f.reason, status: f.status, dentistName: 'Unknown'
+      id: f.id, patientId: f.patient_id, doctorId: f.doctor_id, dueDate: f.due_date, reason: f.reason, status: f.status, doctorName: 'Unknown'
     }));
     followUpsList.forEach(f => {
-       const u = (usersData || []).find(user => user.id === f.dentistId);
-       if (u) f.dentistName = u.name;
+       const u = (usersData || []).find(user => user.id === f.doctorId);
+       if (u) f.doctorName = u.name;
     });
     let toothRecordsList: any[] = toothRecordsData || [];
     let usersList: UserProfile[] = (usersData || []).map(u => ({
@@ -167,8 +167,8 @@ export const reportsService = {
 
     // Filter appointments
     let filteredAppts = appointmentsList.filter(a => dateRangeFilter(a.dateTime));
-    if (filters.dentist && filters.dentist !== 'ALL') {
-      filteredAppts = filteredAppts.filter(a => a.dentistId === filters.dentist || a.dentistName === filters.dentist);
+    if (filters.doctor && filters.doctor !== 'ALL') {
+      filteredAppts = filteredAppts.filter(a => a.doctorId === filters.doctor || a.doctorName === filters.doctor);
     }
     if (filters.patient && filters.patient !== 'ALL') {
       filteredAppts = filteredAppts.filter(a => a.patientId === filters.patient || a.patientName === filters.patient);
@@ -176,8 +176,8 @@ export const reportsService = {
 
     // Filter visits
     let filteredVisits = visitsList.filter(v => dateRangeFilter(v.dateTime));
-    if (filters.dentist && filters.dentist !== 'ALL') {
-      filteredVisits = filteredVisits.filter(v => v.dentistId === filters.dentist || v.dentistName === filters.dentist);
+    if (filters.doctor && filters.doctor !== 'ALL') {
+      filteredVisits = filteredVisits.filter(v => v.doctorId === filters.doctor || v.doctorName === filters.doctor);
     }
     if (filters.patient && filters.patient !== 'ALL') {
       filteredVisits = filteredVisits.filter(v => v.patientId === filters.patient);
@@ -203,8 +203,8 @@ export const reportsService = {
       });
     });
 
-    if (filters.dentist && filters.dentist !== 'ALL') {
-      allProcedures = allProcedures.filter(p => p.assignedDentistId === filters.dentist || p.assignedDentistName === filters.dentist);
+    if (filters.doctor && filters.doctor !== 'ALL') {
+      allProcedures = allProcedures.filter(p => p.assignedDoctorId === filters.doctor || p.assignedDoctorName === filters.doctor);
     }
     const searchTreatment = filters.treatment;
     if (searchTreatment && searchTreatment !== 'ALL') {
@@ -213,8 +213,8 @@ export const reportsService = {
 
     // Filter diseases
     let filteredDiseases = diseasesList.filter(d => dateRangeFilter(d.dateDiagnosed));
-    if (filters.dentist && filters.dentist !== 'ALL') {
-      filteredDiseases = filteredDiseases.filter(d => d.dentistName === filters.dentist);
+    if (filters.doctor && filters.doctor !== 'ALL') {
+      filteredDiseases = filteredDiseases.filter(d => d.doctorName === filters.doctor);
     }
     if (filters.patient && filters.patient !== 'ALL') {
       filteredDiseases = filteredDiseases.filter(d => d.patientId === filters.patient);
@@ -225,8 +225,8 @@ export const reportsService = {
 
     // Filter followups
     let filteredFollowUps = followUpsList.filter(f => dateRangeFilter(f.dueDate + 'T12:00:00Z'));
-    if (filters.dentist && filters.dentist !== 'ALL') {
-      filteredFollowUps = filteredFollowUps.filter(f => f.dentistId === filters.dentist || f.dentistName === filters.dentist);
+    if (filters.doctor && filters.doctor !== 'ALL') {
+      filteredFollowUps = filteredFollowUps.filter(f => f.doctorId === filters.doctor || f.doctorName === filters.doctor);
     }
     if (filters.patient && filters.patient !== 'ALL') {
       filteredFollowUps = filteredFollowUps.filter(f => f.patientId === filters.patient);
@@ -482,12 +482,12 @@ export const reportsService = {
     // 8. Staff Performance / Productivity
     const staffProductivityRaw: Record<string, number> = {};
     allProcedures.filter(p => p.status === 'Completed').forEach(p => {
-      if (p.assignedDentistName) {
-        staffProductivityRaw[p.assignedDentistName] = (staffProductivityRaw[p.assignedDentistName] || 0) + 1;
+      if (p.assignedDoctorName) {
+        staffProductivityRaw[p.assignedDoctorName] = (staffProductivityRaw[p.assignedDoctorName] || 0) + 1;
       }
     });
-    // Add default zero for other dentists to ensure they render in list
-    usersList.filter(u => u.role === 'Dentist').forEach(d => {
+    // Add default zero for other doctors to ensure they render in list
+    usersList.filter(u => u.role === 'Doctor').forEach(d => {
       if (!staffProductivityRaw[d.name]) {
         staffProductivityRaw[d.name] = 0;
       }
@@ -498,7 +498,7 @@ export const reportsService = {
       Treatments
     })).sort((a, b) => b.Treatments - a.Treatments);
 
-    const mostActiveDentist = staffProductivity.length > 0 ? staffProductivity[0].name : 'Dr. Prasad Patil';
+    const mostActiveDoctor = staffProductivity.length > 0 ? staffProductivity[0].name : 'Dr. Prasad Patil';
 
     // 9. Waiting Times & Daily Registrations (Receptionist Reports)
     // Seed waiting times in minutes (e.g. difference between Checked-In and In Treatment timestamps)
@@ -525,7 +525,7 @@ export const reportsService = {
       alerts.push({
         id: `alert-fu-${idx}`,
         title: `Overdue Follow-up: ${pat?.name || 'Patient'}`,
-        description: `Scheduled with ${f.dentistName} on ${f.dueDate} for "${f.reason}".`,
+        description: `Scheduled with ${f.doctorName} on ${f.dueDate} for "${f.reason}".`,
         type: 'warning'
       });
     });
@@ -535,7 +535,7 @@ export const reportsService = {
       alerts.push({
         id: `alert-pr-${idx}`,
         title: `Pending Treatment: ${p.patientName}`,
-        description: `Procedure "${p.description}" is status "${p.status}" with ${p.assignedDentistName}.`,
+        description: `Procedure "${p.description}" is status "${p.status}" with ${p.assignedDoctorName}.`,
         type: 'info'
       });
     });
@@ -545,7 +545,7 @@ export const reportsService = {
       alerts.push({
         id: `alert-ms-${idx}`,
         title: `Missed Appointment: ${a.patientName}`,
-        description: `Missed slot on ${new Date(a.dateTime).toLocaleDateString()} with ${a.dentistName}.`,
+        description: `Missed slot on ${new Date(a.dateTime).toLocaleDateString()} with ${a.doctorName}.`,
         type: 'warning'
       });
     });
@@ -628,7 +628,7 @@ export const reportsService = {
       },
       staffStats: {
         productivity: staffProductivity,
-        mostActiveDentist
+        mostActiveDoctor
       },
       receptionistStats: {
         averageWaitingTime,
@@ -656,18 +656,18 @@ export const reportsService = {
     medicalHistory?: string[];
     bloodType?: string;
     address?: string;
-    assignedDentistName?: string;
+    assignedDoctorName?: string;
     visitCount: number;
     lastVisitDate: string | null;
     lastDiagnosis: string | null;
   }[]> => {
-    let visitsQuery = supabase.from('visits').select('id, patient_id, date_time, diagnosis, status, dentist_id');
+    let visitsQuery = supabase.from('visits').select('id, patient_id, date_time, diagnosis, status, doctor_id');
     let patientsQuery = supabase.from('patients').select('*');
-    let apptsQuery = supabase.from('appointments').select('patient_id, dentist_id');
+    let apptsQuery = supabase.from('appointments').select('patient_id, doctor_id');
 
-    if (user?.role === 'Other Dentist') {
-      visitsQuery = visitsQuery.eq('dentist_id', user.id);
-      apptsQuery = apptsQuery.eq('dentist_id', user.id);
+    if (user?.role === 'Other Doctor') {
+      visitsQuery = visitsQuery.eq('doctor_id', user.id);
+      apptsQuery = apptsQuery.eq('doctor_id', user.id);
     }
 
     const [{ data: patientsData }, { data: visitsData }, { data: apptsData }] = await Promise.all([
@@ -680,8 +680,8 @@ export const reportsService = {
     const visits = visitsData || [];
     const appts = apptsData || [];
 
-    // Filter patients for Other Dentist based on whether they've interacted with them
-    if (user?.role === 'Other Dentist') {
+    // Filter patients for Other Doctor based on whether they've interacted with them
+    if (user?.role === 'Other Doctor') {
       const allowedPatientIds = new Set<string>();
       visits.forEach(v => allowedPatientIds.add(v.patient_id));
       appts.forEach(a => allowedPatientIds.add(a.patient_id));
@@ -706,7 +706,7 @@ export const reportsService = {
         medicalHistory: p.medical_history || [],
         bloodType: p.blood_type || '',
         address: p.address || '',
-        assignedDentistName: p.assigned_dentist_name || '',
+        assignedDoctorName: p.assigned_doctor_name || '',
         visitCount: patientVisits.length,
         lastVisitDate: patientVisits.length > 0 ? patientVisits[0].date_time : null,
         lastDiagnosis: patientVisits.length > 0 ? (patientVisits[0].diagnosis || null) : null,
@@ -752,7 +752,7 @@ export const reportsService = {
       displayId: patientData.display_id || '',
       avatarUrl: patientData.avatar_url || '',
       emergencyContact: patientData.emergency_contact,
-      assignedDentistName: patientData.assigned_dentist_name || '',
+      assignedDoctorName: patientData.assigned_doctor_name || '',
     } : null;
 
     const clinic = clinicData ? {
@@ -763,16 +763,16 @@ export const reportsService = {
       logoUrl: clinicData.logo_url || '',
     } : { name: 'Dental Clinic', address: '', phone: '', email: '', logoUrl: '' };
 
-    // Build visits with dentist names resolved
+    // Build visits with doctor names resolved
     const users = usersData || [];
     const visits = (visitsData || []).map(v => {
-      const dentist = users.find(u => u.id === v.dentist_id);
+      const doctor = users.find(u => u.id === v.doctor_id);
       return {
         id: v.id,
         patientId: v.patient_id,
         dateTime: v.date_time,
-        dentistId: v.dentist_id,
-        dentistName: dentist?.name || v.dentist_name || 'Doctor',
+        doctorId: v.doctor_id,
+        doctorName: doctor?.name || v.doctor_name || 'Doctor',
         chiefComplaint: v.chief_complaint || '',
         diagnosis: v.diagnosis || '',
         treatment: v.treatment || '',
@@ -796,7 +796,7 @@ export const reportsService = {
       restoration: tr.restoration || 'None',
       procedure: tr.procedure || 'None',
       notes: tr.notes || '',
-      dentistName: tr.dentist_name || '',
+      doctorName: tr.doctor_name || '',
       date: tr.updated_at || tr.created_at || '',
       images: tr.images || [],
     }));
@@ -833,13 +833,13 @@ export const reportsService = {
 
     // Follow-ups
     const followUps = (followUpsData || []).map(f => {
-      const dentist = users.find(u => u.id === f.dentist_id);
+      const doctor = users.find(u => u.id === f.doctor_id);
       return {
         id: f.id,
         dueDate: f.due_date,
         reason: f.reason,
         status: f.status || 'Pending',
-        dentistName: dentist?.name || '',
+        doctorName: doctor?.name || '',
       };
     });
 
@@ -853,7 +853,7 @@ export const reportsService = {
           description: p.description,
           cost: p.cost,
           status: p.status,
-          assignedDentistName: p.assigned_dentist_name || '',
+          assignedDoctorName: p.assigned_doctor_name || '',
         }));
       return {
         id: tp.id,

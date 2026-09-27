@@ -32,16 +32,16 @@ export const RoleSelectScreen: React.FC<RoleSelectScreenProps> = ({ onSelectRole
           {/* Role Rows */}
           <RoleCard
             icon={<Stethoscope className="w-5 h-5 text-red-700" />}
-            title="Dentist"
+            title="Doctor"
             description="Full clinical access and patient management"
-            onClick={() => onSelectRole('Dentist')}
+            onClick={() => onSelectRole('Doctor')}
             iconBg="bg-red-50"
           />
           <RoleCard
             icon={<Users className="w-5 h-5 text-indigo-700" />}
-            title="Other Dentist"
+            title="Other Doctor"
             description="Access assigned patients and clinical records"
-            onClick={() => onSelectRole('Other Dentist')}
+            onClick={() => onSelectRole('Other Doctor')}
             iconBg="bg-indigo-50"
           />
           <RoleCard

@@ -40,7 +40,7 @@ export const UserProfileView: React.FC = () => {
   // Form states
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
-  const [editRole, setEditRole] = useState<UserRole>('Dentist');
+  const [editRole, setEditRole] = useState<UserRole>('Doctor');
   const [editActive, setEditActive] = useState<boolean>(true);
   const [editLocked, setEditLocked] = useState<boolean>(false);
 
@@ -56,7 +56,7 @@ export const UserProfileView: React.FC = () => {
 
         if (error || !profile) {
           addToast({ type: 'error', title: 'User Not Found', message: 'The user profile does not exist in the clinic ledger.' });
-          navigate('/dentist/settings/users');
+          navigate('/doctor/settings/users');
           return;
         }
 
@@ -84,15 +84,15 @@ export const UserProfileView: React.FC = () => {
         const filteredLogs = logs.filter(l => l.userEmail === mappedProfile.email);
         setUserActivities(filteredLogs);
 
-        // Fetch patients if Dentist
-        if (mappedProfile.role === 'Dentist') {
+        // Fetch patients if Doctor
+        if (mappedProfile.role === 'Doctor') {
           const allPatients = await patientService.getPatients();
           setAssignedPatients(allPatients);
         }
       } catch (err) {
         console.error(err);
         addToast({ type: 'error', title: 'Error', message: 'Failed to load user profile.' });
-        navigate('/dentist/settings/users');
+        navigate('/doctor/settings/users');
       }
     };
 
@@ -105,7 +105,7 @@ export const UserProfileView: React.FC = () => {
 
     try {
       const roleIds: Record<string, string> = {
-        'Dentist': '00000000-0000-0000-0000-000000000003',
+        'Doctor': '00000000-0000-0000-0000-000000000003',
         'Dental Assistant': '00000000-0000-0000-0000-000000000005',
         'Receptionist': '00000000-0000-0000-0000-000000000004'
       };
@@ -167,7 +167,7 @@ export const UserProfileView: React.FC = () => {
       {/* Back button and profile title */}
       <div className="flex flex-col gap-4">
         <Link
-          to="/dentist/settings/users"
+          to="/doctor/settings/users"
           className="inline-flex items-center text-xs font-bold text-slate-500 hover:text-slate-805 w-fit gap-1 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
@@ -293,7 +293,7 @@ export const UserProfileView: React.FC = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
-                        <SelectItem value="Dentist" className="text-xs font-semibold">Dentist</SelectItem>
+                        <SelectItem value="Doctor" className="text-xs font-semibold">Doctor</SelectItem>
                         <SelectItem value="Dental Assistant" className="text-xs font-semibold">Dental Assistant</SelectItem>
                       </SelectContent>
                     </Select>
@@ -357,8 +357,8 @@ export const UserProfileView: React.FC = () => {
             )}
           </Card>
 
-          {/* Assigned Patients lists (For dentists only) */}
-          {userProfile.role === 'Dentist' && (
+          {/* Assigned Patients lists (For doctors only) */}
+          {userProfile.role === 'Doctor' && (
             <Card className="border-none shadow-sm bg-white rounded-2xl p-6">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
                 <Users className="w-4 h-4 text-red-808" />

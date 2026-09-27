@@ -11,7 +11,7 @@ import {
   ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell,
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts';
-import { getToothName } from './odontogram/odontogramUtils';
+
 
 const DATE_RANGES = [
   'Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 
@@ -147,7 +147,7 @@ export const PatientReportsTab: React.FC = () => {
       date: v.dateTime,
       diagnosis: v.diagnosis || 'General',
       complaint: v.chiefComplaint || '',
-      dentist: v.dentistName || 'Unknown',
+      doctor: v.doctorName || 'Unknown',
       status: v.status || 'Completed'
     })).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
 
@@ -380,31 +380,6 @@ export const PatientReportsTab: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-slate-200 shadow-sm">
-          <CardHeader className="border-b border-slate-100 pb-3">
-            <CardTitle className="text-sm font-black text-slate-900 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-600" />
-              Most Affected Teeth
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            {chartData.teethData.length ? (
-              <div className="h-[250px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.teethData} layout="vertical" margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                    <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
-                    <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 10, fill: '#64748b', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', fontWeight: 'bold' }} />
-                    <Bar dataKey="count" fill="#dc2626" radius={[0, 4, 4, 0]} maxBarSize={30} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="h-[250px] flex items-center justify-center text-sm font-bold text-slate-400">No odontogram findings.</div>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       {/* Charts Row 3: Follow-up Status + Appointment Status */}
@@ -474,68 +449,6 @@ export const PatientReportsTab: React.FC = () => {
         </Card>
       </div>
 
-      {/* Tooth Heatmap Grid */}
-      <Card className="rounded-2xl border-slate-200 shadow-sm">
-        <CardHeader className="border-b border-slate-100 pb-3">
-          <CardTitle className="text-sm font-black text-slate-900 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-600" />
-            Odontogram Heatmap (All 32 Teeth)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-3">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Upper Maxillary (18–28)</p>
-              <div className="grid grid-cols-8 sm:grid-cols-16 gap-1.5">
-                {[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28].map(num => {
-                  const record = chartData.toothHeatmap.find((t: any) => t.toothNumber === num);
-                  const intensity = record?.intensity || 0;
-                  const bgColor = intensity === 0 ? 'bg-white border-slate-200'
-                    : intensity <= 0.3 ? 'bg-amber-50 border-amber-300'
-                    : intensity <= 0.6 ? 'bg-orange-50 border-orange-300'
-                    : 'bg-red-50 border-red-300';
-                  return (
-                    <div key={num} className={`p-1.5 rounded-lg border text-center ${bgColor}`}>
-                      <span className="text-[10px] font-extrabold text-slate-700">{num}</span>
-                      {record && record.condition !== 'Healthy' && (
-                        <span className="text-[7px] font-black uppercase block text-slate-500 truncate">{record.condition.split(' ')[0]}</span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Lower Mandibular (48–38)</p>
-              <div className="grid grid-cols-8 sm:grid-cols-16 gap-1.5">
-                {[48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38].map(num => {
-                  const record = chartData.toothHeatmap.find((t: any) => t.toothNumber === num);
-                  const intensity = record?.intensity || 0;
-                  const bgColor = intensity === 0 ? 'bg-white border-slate-200'
-                    : intensity <= 0.3 ? 'bg-amber-50 border-amber-300'
-                    : intensity <= 0.6 ? 'bg-orange-50 border-orange-300'
-                    : 'bg-red-50 border-red-300';
-                  return (
-                    <div key={num} className={`p-1.5 rounded-lg border text-center ${bgColor}`}>
-                      <span className="text-[10px] font-extrabold text-slate-700">{num}</span>
-                      {record && record.condition !== 'Healthy' && (
-                        <span className="text-[7px] font-black uppercase block text-slate-500 truncate">{record.condition.split(' ')[0]}</span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-100">
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-white border border-slate-200"></div><span className="text-[10px] font-bold text-slate-500">Healthy</span></div>
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-amber-50 border border-amber-300"></div><span className="text-[10px] font-bold text-slate-500">1 Treatment</span></div>
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-orange-50 border border-orange-300"></div><span className="text-[10px] font-bold text-slate-500">2 Treatments</span></div>
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50 border border-red-300"></div><span className="text-[10px] font-bold text-slate-500">3+ Treatments</span></div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Visit History Table */}
       {chartData.visitHistory.length > 0 && (
         <Card className="rounded-2xl border-slate-200 shadow-sm">
@@ -553,7 +466,7 @@ export const PatientReportsTab: React.FC = () => {
                     <th className="py-3 px-4">Date</th>
                     <th className="py-3 px-4">Diagnosis</th>
                     <th className="py-3 px-4">Chief Complaint</th>
-                    <th className="py-3 px-4">Dentist</th>
+                    <th className="py-3 px-4">Doctor</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
@@ -564,7 +477,7 @@ export const PatientReportsTab: React.FC = () => {
                         <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold">{v.diagnosis}</span>
                       </td>
                       <td className="py-3 px-4 text-slate-600">{v.complaint || '-'}</td>
-                      <td className="py-3 px-4">{v.dentist}</td>
+                      <td className="py-3 px-4">{v.doctor}</td>
                     </tr>
                   ))}
                 </tbody>

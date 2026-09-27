@@ -40,7 +40,7 @@ export const RoleManagement: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   
   // Local state for the selected user's editable properties
-  const [editingRole, setEditingRole] = useState<UserRole>('Dentist');
+  const [editingRole, setEditingRole] = useState<UserRole>('Doctor');
   const [editingPermissions, setEditingPermissions] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -250,8 +250,8 @@ export const RoleManagement: React.FC = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl">
-                        <SelectItem value="Dentist" className="text-xs font-semibold">Dentist</SelectItem>
-                        <SelectItem value="Other Dentist" className="text-xs font-semibold">Other Dentist</SelectItem>
+                        <SelectItem value="Doctor" className="text-xs font-semibold">Doctor</SelectItem>
+                        <SelectItem value="Other Doctor" className="text-xs font-semibold">Other Doctor</SelectItem>
                         <SelectItem value="Dental Assistant" className="text-xs font-semibold">Dental Assistant</SelectItem>
                         <SelectItem value="Receptionist" className="text-xs font-semibold">Receptionist</SelectItem>
                       </SelectContent>

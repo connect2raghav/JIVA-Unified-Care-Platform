@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Calendar, Search, UserPlus, Check, Sparkles, User, Clock, Stethoscope } from 'lucide-react';
+import { Calendar, Search, UserPlus, Check, Sparkles, User, Clock, Stethoscope, Building2 } from 'lucide-react';
 
 const APPOINTMENT_TYPES = [
   'Consultation',
@@ -45,7 +45,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   
   // Data lists
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [dentists, setDentists] = useState<{ id: string; name: string }[]>([]);
+  const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([]);
+  const [hospitals, setHospitals] = useState<{ id: string; name: string }[]>([]);
 
   // Selection states
   const [selectedPatientId, setSelectedPatientId] = useState('');
@@ -59,7 +60,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [newPatientGender, setNewPatientGender] = useState('Female');
 
   // Booking parameters
-  const [selectedDentistId, setSelectedDentistId] = useState('');
+  const [selectedHospitalId, setSelectedHospitalId] = useState('');
+  const [selectedDoctorId, setSelectedDoctorId] = useState('');
   const [apptType, setApptType] = useState('Consultation');
   const [apptDate, setApptDate] = useState('');
   const [apptTime, setApptTime] = useState('');
@@ -69,7 +71,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
   // Refs for keyboard navigation
-  const dentistRef = React.useRef<HTMLSelectElement>(null);
+  const doctorRef = React.useRef<HTMLSelectElement>(null);
   const typeRef = React.useRef<HTMLSelectElement>(null);
   const dateRef = React.useRef<HTMLInputElement>(null);
   const timeRef = React.useRef<HTMLInputElement>(null);
@@ -103,46 +105,63 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       setSelectedPatientId(patientList[0].id);
     }
 
-    // Load dentists list
-    let staff: any[] = [];
+    // Load hospitals list
     try {
       const { supabase } = await import('@/lib/supabaseClient');
-      let query = supabase.from('users').select('*');
-      if (currentUser && currentUser.clinic_id && currentUser.role !== 'Super Admin') {
-        query = query.eq('clinic_id', currentUser.clinic_id);
-      }
-      const { data, error } = await query;
+      const { data, error } = await supabase.from('clinics').select('id, name').eq('is_active', true);
       if (!error && data) {
-        staff = data;
+        setHospitals(data);
+        if (currentUser && currentUser.clinic_id) {
+          setSelectedHospitalId(currentUser.clinic_id);
+        } else if (data.length > 0) {
+          setSelectedHospitalId(data[0].id);
+        }
       }
     } catch (e) {
-      console.error('Failed to fetch dentists', e);
-    }
-    
-    const filtered = staff.filter((u: any) => 
-      (u.role === 'Dentist' || u.role === 'Other Dentist') && u.is_active !== false
-    );
-    
-    setDentists(filtered);
-    
-    // Default to self if logged in as Dentist
-    if (currentUser && (currentUser.role === 'Dentist' || currentUser.role === 'Other Dentist')) {
-      const isSelfInList = filtered.some(u => u.id === currentUser.id);
-      if (isSelfInList) {
-        setSelectedDentistId(currentUser.id);
-      } else if (filtered.length > 0) {
-        setSelectedDentistId(filtered[0].id);
-      }
-    } else if (filtered.length > 0) {
-      setSelectedDentistId(filtered[0].id);
+      console.error('Failed to fetch hospitals', e);
     }
   };
+
+  useEffect(() => {
+    const fetchDocs = async () => {
+      if (!selectedHospitalId) return;
+      try {
+        const { supabase } = await import('@/lib/supabaseClient');
+        const { data: roleData } = await supabase.from('roles').select('id').in('name', ['Physician', 'Doctor', 'Other Doctor']);
+        const roleIds = roleData?.map(r => r.id) || [];
+        
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, name')
+          .eq('clinic_id', selectedHospitalId)
+          .in('role_id', roleIds)
+          .eq('is_active', true);
+        
+        if (!error && data) {
+          setDoctors(data);
+          
+          if (currentUser && currentUser.clinic_id === selectedHospitalId && ['Physician', 'Doctor'].includes(currentUser.role)) {
+            const isSelf = data.some(d => d.id === currentUser.id);
+            if (isSelf) setSelectedDoctorId(currentUser.id);
+            else if (data.length > 0) setSelectedDoctorId(data[0].id);
+          } else if (data.length > 0) {
+            setSelectedDoctorId(data[0].id);
+          } else {
+            setSelectedDoctorId('');
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch doctors', e);
+      }
+    };
+    fetchDocs();
+  }, [selectedHospitalId, currentUser]);
 
   const handleBookAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedDentistId || !apptDate || !apptTime) {
-      addToast({ type: 'warning', title: 'Missing details', message: 'Provide dentist selection, schedule date and time slot.' });
+    if (!selectedDoctorId || !apptDate || !apptTime) {
+      addToast({ type: 'warning', title: 'Missing details', message: 'Provide doctor selection, schedule date and time slot.' });
       return;
     }
 
@@ -188,29 +207,30 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     }
 
     // Step 2: Book appointment slot
-    const dentist = dentists.find(d => d.id === selectedDentistId);
-    const dentistName = dentist ? dentist.name : 'Dr. Prasad Patil';
+    const doctor = doctors.find(d => d.id === selectedDoctorId);
+    const doctorName = doctor ? doctor.name : 'Dr. Prasad Patil';
     const localDate = new Date(`${apptDate}T${apptTime}`);
     const dateTimeStr = localDate.toISOString();
 
     const apptResult = await receptionService.bookAppointment({
+      clinicId: selectedHospitalId,
       patientId,
       patientName,
-      dentistId: selectedDentistId,
-      dentistName,
+      physicianId: selectedDoctorId,
+      physicianName: doctorName,
       dateTime: dateTimeStr,
       durationMinutes: 30, // Default duration
       status: 'Scheduled',
       reason: apptType,
       notes
-    });
+    } as any);
     setIsLoading(false);
 
     if (apptResult.success) {
       addToast({
         type: 'success',
         title: 'Appointment Scheduled',
-        message: `Booked slot for ${patientName} with ${dentistName} on ${apptDate}.`
+        message: `Booked slot for ${patientName} with ${doctorName} on ${apptDate}.`
       });
 
       // Clear forms
@@ -233,7 +253,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         // Check if the appointment is today, redirect them to queue
         const today = new Date().toISOString().split('T')[0];
         if (apptDate === today) {
-          const rolePrefix = window.location.pathname.split('/')[1] || 'dentist';
+          const rolePrefix = window.location.pathname.split('/')[1] || 'doctor';
           navigate(`/${rolePrefix}/appointments`);
         }
       }
@@ -261,7 +281,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         setPatientSearch(filteredPatients[0].name);
       }
       setShowSearchDropdown(false);
-      dentistRef.current?.focus();
+      doctorRef.current?.focus();
     }
   };
 
@@ -275,7 +295,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       
       e.preventDefault();
       
-      if (target === dentistRef.current) {
+      if (target === doctorRef.current) {
         submitBtnRef.current?.focus();
       } else if (target === typeRef.current) {
         dateRef.current?.focus();
@@ -362,7 +382,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                             setSelectedPatientId(pat.id);
                             setPatientSearch(pat.name);
                             setShowSearchDropdown(false);
-                            dentistRef.current?.focus();
+                            doctorRef.current?.focus();
                           }}
                           className={`px-4 py-2 cursor-pointer transition text-sm ${searchIndex === idx ? 'bg-slate-100' : 'hover:bg-slate-50'}`}
                         >
@@ -471,20 +491,43 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <Clock className="w-4 h-4 text-slate-400" /> Appointment Details
             </div>
 
-            {/* Dentist Select */}
+            {/* Hospital/Clinic Select */}
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-xs font-semibold text-slate-500">Hospital / Clinic <span className="text-red-500">*</span></Label>
+              <div className="relative">
+                <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <select
+                  className="w-full h-9 rounded-lg border border-slate-200 pl-8 pr-3 bg-white text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all"
+                  value={selectedHospitalId}
+                  onChange={(e) => setSelectedHospitalId(e.target.value)}
+                >
+                  <option value="" disabled>Select a facility...</option>
+                  {hospitals.map((h) => (
+                    <option key={h.id} value={h.id}>{h.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Doctor Select */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-slate-500">Attending Dentist <span className="text-red-500">*</span></Label>
+              <Label className="text-xs font-semibold text-slate-500">Attending Doctor <span className="text-red-500">*</span></Label>
               <div className="relative">
                 <Stethoscope className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <select
-                  ref={dentistRef}
+                  ref={doctorRef}
                   className="w-full h-9 rounded-lg border border-slate-200 pl-8 pr-3 bg-white text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all"
-                  value={selectedDentistId}
-                  onChange={(e) => setSelectedDentistId(e.target.value)}
+                  value={selectedDoctorId}
+                  onChange={(e) => setSelectedDoctorId(e.target.value)}
+                  disabled={!selectedHospitalId || doctors.length === 0}
                 >
-                  {dentists.map((doc) => (
-                    <option key={doc.id} value={doc.id}>{doc.name}</option>
-                  ))}
+                  {doctors.length === 0 ? (
+                    <option value="" disabled>No doctors available</option>
+                  ) : (
+                    doctors.map((doc) => (
+                      <option key={doc.id} value={doc.id}>{doc.name}</option>
+                    ))
+                  )}
                 </select>
               </div>
             </div>

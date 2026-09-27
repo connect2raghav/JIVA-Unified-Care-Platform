@@ -415,7 +415,16 @@ export const EmergencyDispatchDesk: React.FC = () => {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold">Pickup Location *</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-bold">Pickup Location *</Label>
+                <button 
+                  type="button" 
+                  onClick={() => setIntakeForm(p => ({ ...p, pickupLocation: '12.9716° N, 77.5946° E (https://maps.google.com/?q=12.9716,77.5946)' }))}
+                  className="text-[10px] text-blue-600 font-bold hover:underline flex items-center gap-1"
+                >
+                  <MapPin className="w-3 h-3" /> Get Exact GPS
+                </button>
+              </div>
               <Input value={intakeForm.pickupLocation} onChange={e => setIntakeForm(p => ({ ...p, pickupLocation: e.target.value }))}
                 placeholder="Address or landmark" className="h-10 rounded-xl text-sm" />
             </div>

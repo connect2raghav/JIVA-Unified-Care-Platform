@@ -49,7 +49,7 @@ export const UserManagement: React.FC = () => {
   // Form states for creation
   const [newEmail, setNewEmail] = useState('');
   const [newName, setNewName] = useState('');
-  const [newRole, setNewRole] = useState<UserRole>('Dentist');
+  const [newRole, setNewRole] = useState<UserRole>('Doctor');
   const [newPhone, setNewPhone] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newConfirmPassword, setNewConfirmPassword] = useState('');
@@ -57,7 +57,7 @@ export const UserManagement: React.FC = () => {
 
   // Form states for edition
   const [editName, setEditName] = useState('');
-  const [editRole, setEditRole] = useState<UserRole>('Dentist');
+  const [editRole, setEditRole] = useState<UserRole>('Doctor');
 
   // Confirmations overlay state
   const [confirmAction, setConfirmAction] = useState<{
@@ -149,7 +149,7 @@ export const UserManagement: React.FC = () => {
     // Reset forms
     setNewEmail('');
     setNewName('');
-    setNewRole('Dentist');
+    setNewRole('Doctor');
     setNewPhone('');
     setNewPassword('');
     setNewConfirmPassword('');
@@ -169,8 +169,8 @@ export const UserManagement: React.FC = () => {
 
     try {
       const roleIds: Record<string, string> = {
-        'Dentist': '00000000-0000-0000-0000-000000000003',
-        'Other Dentist': '00000000-0000-0000-0000-000000000006',
+        'Doctor': '00000000-0000-0000-0000-000000000003',
+        'Other Doctor': '00000000-0000-0000-0000-000000000006',
         'Dental Assistant': '00000000-0000-0000-0000-000000000005'
       };
       const role_id = roleIds[editRole];
@@ -225,7 +225,7 @@ export const UserManagement: React.FC = () => {
         successMessage = `Activated clinical access profile for ${user.name}.`;
       } else if (type === 'delete') {
         if (user.id === currentAdmin?.id) {
-          addToast({ type: 'error', title: 'Access Denied', message: 'You cannot delete your own Dentist account.' });
+          addToast({ type: 'error', title: 'Access Denied', message: 'You cannot delete your own Doctor account.' });
           setConfirmAction(null);
           return;
         }
@@ -273,7 +273,7 @@ export const UserManagement: React.FC = () => {
           </div>
           <div>
             <Link 
-              to={`/dentist/settings/users/${row.original.id}`}
+              to={`/doctor/settings/users/${row.original.id}`}
               className="font-bold text-slate-900 hover:text-red-800 transition leading-snug"
             >
               {row.original.name}
@@ -444,7 +444,7 @@ export const UserManagement: React.FC = () => {
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 <SelectItem value="ALL" className="text-xs font-semibold">All Clinical Roles</SelectItem>
-                <SelectItem value="Dentist" className="text-xs font-semibold">Dentist</SelectItem>
+                <SelectItem value="Doctor" className="text-xs font-semibold">Doctor</SelectItem>
                 <SelectItem value="Dental Assistant" className="text-xs font-semibold">Dental Assistant</SelectItem>
               </SelectContent>
             </Select>
@@ -477,7 +477,7 @@ export const UserManagement: React.FC = () => {
                 <Input
                   id="create-name"
                   type="text"
-                  placeholder={newRole.includes('Dentist') ? "e.g. Dr. Prasad Patil" : "e.g. Prasad Patil"}
+                  placeholder={newRole.includes('Doctor') ? "e.g. Dr. Prasad Patil" : "e.g. Prasad Patil"}
                   value={newName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
                   className="h-10 rounded-xl border-slate-200 text-xs font-semibold placeholder:text-slate-300"
@@ -491,7 +491,7 @@ export const UserManagement: React.FC = () => {
                 <Input
                   id="create-email"
                   type="email"
-                  placeholder="e.g. dentist-ray@dcip.org"
+                  placeholder="e.g. doctor-ray@dcip.org"
                   value={newEmail}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewEmail(e.target.value)}
                   className="h-10 rounded-xl border-slate-200 text-xs font-semibold"
@@ -530,8 +530,8 @@ export const UserManagement: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Dentist" className="text-xs font-semibold">Dentist</SelectItem>
-                    <SelectItem value="Other Dentist" className="text-xs font-semibold">Other Dentist</SelectItem>
+                    <SelectItem value="Doctor" className="text-xs font-semibold">Doctor</SelectItem>
+                    <SelectItem value="Other Doctor" className="text-xs font-semibold">Other Doctor</SelectItem>
                     <SelectItem value="Dental Assistant" className="text-xs font-semibold">Dental Assistant</SelectItem>
                     <SelectItem value="Receptionist" className="text-xs font-semibold">Receptionist</SelectItem>
                   </SelectContent>
@@ -653,8 +653,8 @@ export const UserManagement: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Dentist" className="text-xs font-semibold">Dentist</SelectItem>
-                    <SelectItem value="Other Dentist" className="text-xs font-semibold">Other Dentist</SelectItem>
+                    <SelectItem value="Doctor" className="text-xs font-semibold">Doctor</SelectItem>
+                    <SelectItem value="Other Doctor" className="text-xs font-semibold">Other Doctor</SelectItem>
                     <SelectItem value="Dental Assistant" className="text-xs font-semibold">Dental Assistant</SelectItem>
                   </SelectContent>
                 </Select>

@@ -11,8 +11,8 @@ export interface AssistantTask {
   patientId: string;
   patientName?: string;
   visitId: string;
-  dentistId: string;
-  dentistName: string;
+  doctorId: string;
+  doctorName: string;
   priority: 'Low' | 'Medium' | 'High' | 'Emergency';
   dueTime: string;
   status: 'Pending' | 'Accepted' | 'In Progress' | 'Completed' | 'Verified' | 'Cancelled';
@@ -157,7 +157,7 @@ export const taskService = {
     patientId?: string;
     visitId?: string;
     assistantId?: string;
-    dentistId?: string;
+    doctorId?: string;
     status?: string;
   }): Promise<AssistantTask[]> => {
     let tasks: AssistantTask[] = [];
@@ -182,8 +182,8 @@ export const taskService = {
           assignedAssistantName: t.assigned_assistant_name,
           patientId: t.patient_id,
           visitId: t.visit_id,
-          dentistId: t.dentist_id,
-          dentistName: t.dentist_name || 'Dentist',
+          doctorId: t.doctor_id,
+          doctorName: t.doctor_name || 'Doctor',
           priority: t.priority || 'Medium',
           dueTime: t.due_time,
           status: t.status || 'Pending',
@@ -216,7 +216,7 @@ export const taskService = {
       if (filters.patientId) tasks = tasks.filter(t => t.patientId === filters.patientId);
       if (filters.visitId) tasks = tasks.filter(t => t.visitId === filters.visitId);
       if (filters.assistantId) tasks = tasks.filter(t => t.assignedAssistantId === filters.assistantId);
-      if (filters.dentistId) tasks = tasks.filter(t => t.dentistId === filters.dentistId);
+      if (filters.doctorId) tasks = tasks.filter(t => t.doctorId === filters.doctorId);
       if (filters.status && filters.status !== 'ALL') tasks = tasks.filter(t => t.status === filters.status);
     }
 
@@ -248,7 +248,7 @@ export const taskService = {
       isMockPatient || 
       newTask.patientId?.startsWith('demo-') || 
       newTask.visitId?.startsWith('visit-') ||
-      newTask.dentistId?.startsWith('demo-')
+      newTask.doctorId?.startsWith('demo-')
     ) {
       try {
         const mockTasks = JSON.parse(localStorage.getItem('dcip_mock_tasks') || '[]');
@@ -268,8 +268,8 @@ export const taskService = {
           assigned_assistant_name: newTask.assignedAssistantName || null,
           patient_id: newTask.patientId,
           visit_id: newTask.visitId,
-          dentist_id: newTask.dentistId,
-          dentist_name: newTask.dentistName,
+          doctor_id: newTask.doctorId,
+          doctor_name: newTask.doctorName,
           priority: newTask.priority,
           due_time: newTask.dueTime,
           status: newTask.status,
@@ -395,7 +395,7 @@ export const taskService = {
   // -------------------------------------------------------------
   addTaskAttachment: async (
     attach: Omit<TaskAttachment, 'id' | 'createdAt'>,
-    patientMeta: { patientId: string; visitId: string; dentistId: string; dentistName: string }
+    patientMeta: { patientId: string; visitId: string; doctorId: string; doctorName: string }
   ): Promise<{ success: boolean; data?: TaskAttachment; error?: string }> => {
     const newAttach: TaskAttachment = {
       ...attach,
@@ -416,8 +416,8 @@ export const taskService = {
         imageUrl: attach.fileUrl,
         notes: `Uploaded by Assistant via task attachment.`,
         visitId: patientMeta.visitId,
-        dentistId: patientMeta.dentistId,
-        dentistName: patientMeta.dentistName
+        doctorId: patientMeta.doctorId,
+        doctorName: patientMeta.doctorName
       });
     } catch (err) {
       console.warn('Failed to auto-propagate task attachment to imaging files:', err);

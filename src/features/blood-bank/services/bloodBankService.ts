@@ -6,6 +6,7 @@
  * All queries scoped by clinic_id via Supabase RLS.
  */
 import { supabase } from '@/lib/supabaseClient';
+import { useAuthStore } from '@/store/useAuthStore';
 import type {
   BloodInventoryItem,
   BloodRequest,
@@ -50,9 +51,12 @@ function mapRequestRow(row: any): BloodRequest {
 export const bloodBankService = {
   // ─── Inventory ─────────────────────────────────────────────
   async listInventory(): Promise<BloodInventoryItem[]> {
+    const user = useAuthStore.getState().user;
+    const clinicId = user?.clinic_id || (user as any)?.clinicId;
     const { data, error } = await supabase
       .from('blood_inventory')
       .select('*')
+      .eq('clinic_id', clinicId)
       .order('blood_group');
     if (error) throw error;
     return (data ?? []).map(mapInventoryRow);
@@ -91,9 +95,12 @@ export const bloodBankService = {
 
   // ─── Blood Requests ────────────────────────────────────────
   async listRequests(): Promise<BloodRequest[]> {
+    const user = useAuthStore.getState().user;
+    const clinicId = user?.clinic_id || (user as any)?.clinicId;
     const { data, error } = await supabase
       .from('blood_requests')
       .select('*')
+      .eq('clinic_id', clinicId)
       .order('created_at', { ascending: false });
     if (error) throw error;
     return (data ?? []).map(mapRequestRow);

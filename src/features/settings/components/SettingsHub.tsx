@@ -5,13 +5,13 @@ import { Settings, Users, Shield, User } from 'lucide-react';
 export const SettingsHub: React.FC = () => {
   const location = useLocation();
 
-  if (location.pathname === '/dentist/settings' || location.pathname === '/dentist/settings/') {
-    return <Navigate to="/dentist/settings/profile" replace />;
+  if (location.pathname === '/doctor/settings' || location.pathname === '/doctor/settings/') {
+    return <Navigate to="/doctor/settings/profile" replace />;
   }
 
   const tabs = [
-    { name: 'My Profile', path: '/dentist/settings/profile', icon: User },
-    { name: 'Clinic Profile', path: '/dentist/settings/clinic', icon: Settings },
+    { name: 'My Profile', path: '/doctor/settings/profile', icon: User },
+    { name: 'Clinic Profile', path: '/doctor/settings/clinic', icon: Settings },
   ];
 
   return (

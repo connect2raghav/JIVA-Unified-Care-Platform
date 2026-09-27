@@ -13,7 +13,7 @@ export const PlatformDashboard: React.FC = () => {
     totalClinics: 0,
     activeClinics: 0,
     inactiveClinics: 0,
-    totalDentists: 0,
+    totalDoctors: 0,
     totalAssistants: 0,
     totalPatients: 0,
     totalAppointments: 0,
@@ -33,7 +33,7 @@ export const PlatformDashboard: React.FC = () => {
       const { count: totalClinics } = await supabase.from('clinics').select('*', { count: 'exact', head: true });
       const { count: activeClinics } = await supabase.from('clinics').select('*', { count: 'exact', head: true }).eq('is_active', true);
       const { count: inactiveClinics } = await supabase.from('clinics').select('*', { count: 'exact', head: true }).eq('is_active', false);
-      const { count: totalDentists } = await supabase.from('users').select('id, clinics!inner(is_active)', { count: 'exact', head: true }).eq('role_id', '00000000-0000-0000-0000-000000000003').eq('clinics.is_active', true);
+      const { count: totalDoctors } = await supabase.from('users').select('id, clinics!inner(is_active)', { count: 'exact', head: true }).eq('role_id', '00000000-0000-0000-0000-000000000003').eq('clinics.is_active', true);
       const { count: totalAssistants } = await supabase.from('users').select('id, clinics!inner(is_active)', { count: 'exact', head: true }).in('role_id', ['00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000005']).eq('clinics.is_active', true);
       const { count: totalPatients } = await supabase.from('patients').select('id, clinics!inner(is_active)', { count: 'exact', head: true }).eq('clinics.is_active', true);
       const { count: totalAppointments } = await supabase.from('appointments').select('id, patients!inner(clinics!inner(is_active))', { count: 'exact', head: true }).eq('patients.clinics.is_active', true);
@@ -42,7 +42,7 @@ export const PlatformDashboard: React.FC = () => {
         totalClinics: totalClinics || 0,
         activeClinics: activeClinics || 0,
         inactiveClinics: inactiveClinics || 0,
-        totalDentists: totalDentists || 0,
+        totalDoctors: totalDoctors || 0,
         totalAssistants: totalAssistants || 0,
         totalPatients: totalPatients || 0,
         totalAppointments: totalAppointments || 0,
@@ -145,14 +145,14 @@ export const PlatformDashboard: React.FC = () => {
            <div className="flex justify-between items-start">
             <div>
               <h3 className="text-gray-500 text-sm font-medium">Total Staff</h3>
-              <p className="text-3xl font-bold mt-2 text-gray-900">{stats.totalDentists + stats.totalAssistants}</p>
+              <p className="text-3xl font-bold mt-2 text-gray-900">{stats.totalDoctors + stats.totalAssistants}</p>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg">
               <Users className="w-6 h-6 text-purple-600" />
             </div>
           </div>
           <div className="mt-4 text-sm flex gap-4 text-gray-600">
-            <span className="font-medium">{stats.totalDentists} Dentists</span>
+            <span className="font-medium">{stats.totalDoctors} Doctors</span>
             <span className="font-medium">{stats.totalAssistants} Assistants</span>
           </div>
         </div>

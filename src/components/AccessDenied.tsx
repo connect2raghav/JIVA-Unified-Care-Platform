@@ -18,9 +18,9 @@ export const AccessDenied: React.FC = () => {
       'SuperAdmin': '/platform/dashboard',
       'Super Admin': '/platform/dashboard',
       'ClinicAdmin': '/admin/dashboard',
-      'Dentist': '/admin/dashboard',
+      'Doctor': '/admin/dashboard',
       'Physician': '/physician/dashboard',
-      'Other Dentist': '/physician/dashboard',
+      'Other Doctor': '/physician/dashboard',
       'Receptionist': '/receptionist/dashboard',
       'Dental Assistant': '/receptionist/dashboard',
     };
