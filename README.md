@@ -1,5 +1,7 @@
 # 🌟 JIVA: The Ultimate Unified Care Platform
 
+![JIVA Poster](docs/assets/Poster.jpg)
+
 ![Status](https://img.shields.io/badge/Status-PRODUCTION--READY-success?style=for-the-badge) ![Level](https://img.shields.io/badge/Level-ENTERPRISE--GRADE-blue?style=for-the-badge) ![Deployment](https://img.shields.io/badge/Deployment-READY--TO--DEPLOY-orange?style=for-the-badge)
 
 Welcome to **JIVA**, the most comprehensive, hyper-scalable, and state-of-the-art Clinical Services Ecosystem ever built. We didn't just build an MVP for a hackathon; we engineered a **production-ready, enterprise-tier SaaS platform** designed to revolutionize healthcare administration globally. 
@@ -66,6 +68,7 @@ graph TD
 3. **Fulfillment:** The Driver clicks "Assign Ambulance". The fleet status transitions from `Available` to `Dispatched`, and the driver receives the exact GPS link to navigate to the scene.
 
 ### Scenario: Blood Bank Cross-matching
+![Blood Bank Dashboard](docs/assets/Blood-Bank.png)
 1. **Request:** A Hospital requires 2 units of `AB-` Plasma. A request is generated in the system.
 2. **Matrix View:** The Blood Bank Manager opens the Blood Bank Matrix, views their globally tracked inventory, and selects the matching request.
 3. **Fulfillment:** With a single click, the inventory is deducted, the request is marked `Fulfilled`, and the Hospital is instantly notified.
@@ -87,6 +90,13 @@ Most systems fail due to poor role segregation. JIVA features a frictionless arc
 | **Blood Bank Manager** | Dedicated, isolated inventory control dashboards and cross-matching tools. |
 | **Ambulance Driver** | Streamlined dispatch screens highlighting exact pickup coordinates and fleet status. |
 | **Patient** | Self-service portal to view personal reports, book appointments, and trigger SOS emergencies autonomously. |
+
+#### Example: Admin & Reception Dashboards
+![Dashboard](docs/assets/Dashboard.png)
+![Receptionist](docs/assets/Receptionist.png)
+
+#### Example: Patient Portal
+![Patient Portal](docs/assets/Patient.png)
 
 ### 2. Clinical Analytics & One-Click PDF Reporting
 JIVA features automated, highly polished PDF report generation. With a single click, physicians can export comprehensive clinical analytics and patient histories. Data-driven dashboards calculate real-time metrics on patient inflow, demographics, and facility utilization.
@@ -122,6 +132,9 @@ Follow these steps to launch the entire production-ready ecosystem on your local
    The application will be available at `http://localhost:5173`.
 
 ### ⚡ Zero-Setup Demo Logins
+
+![Landing Page](docs/assets/Landing-login%20page.png)
+
 We have engineered **Zero-Setup Demo Accounts** directly on the Login page. 
 You do not need to manually create accounts! Simply click any of the **Demo Logins** (e.g., Hospital Admin, Physician, Ambulance Driver) to instantly jump into that role's fully populated dashboard.
 
