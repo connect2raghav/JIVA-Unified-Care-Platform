@@ -14,6 +14,9 @@ import { ClinicManagement } from './features/platform/components/ClinicManagemen
 import { PlatformSettings } from './features/platform/components/PlatformSettings';
 
 import { AppointmentsHub } from './features/appointments/components/AppointmentsHub';
+import { EmergencyDispatchDesk } from './features/emergency/components/EmergencyDispatchDesk';
+import { BloodBankMatrix } from './features/blood-bank/components/BloodBankMatrix';
+import { FacilitiesPage } from './features/facilities/components/FacilitiesPage';
 import { ProfileSettings } from './features/settings/components/ProfileSettings';
 import { ClinicSettings } from './features/settings/components/ClinicSettings';
 import { Reports } from './features/reports/components/Reports';
@@ -187,9 +190,9 @@ export const App: React.FC = () => {
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
           <Route path="appointments" element={<AppointmentsHub />} />
-          <Route path="emergency" element={<PlaceholderPage title="Emergency Dispatch" />} />
-          <Route path="blood-bank" element={<PlaceholderPage title="Blood Bank" />} />
-          <Route path="facilities" element={<PlaceholderPage title="Facilities Directory" />} />
+          <Route path="emergency" element={<EmergencyDispatchDesk />} />
+          <Route path="blood-bank" element={<BloodBankMatrix />} />
+          <Route path="facilities" element={<FacilitiesPage />} />
           <Route path="reports" element={<Reports />} />
           <Route path="reports/patient/:patientId" element={<ReportViewer />} />
           <Route path="settings" element={<SettingsHub />}>
@@ -215,8 +218,8 @@ export const App: React.FC = () => {
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
           <Route path="appointments" element={<AppointmentsHub />} />
-          <Route path="emergency" element={<PlaceholderPage title="Emergency Dispatch" />} />
-          <Route path="blood-bank" element={<PlaceholderPage title="Blood Bank" />} />
+          <Route path="emergency" element={<EmergencyDispatchDesk />} />
+          <Route path="blood-bank" element={<BloodBankMatrix />} />
           <Route path="reports" element={<Reports />} />
           <Route path="reports/patient/:patientId" element={<ReportViewer />} />
           <Route path="settings" element={
@@ -243,7 +246,7 @@ export const App: React.FC = () => {
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
           <Route path="appointments" element={<AppointmentsHub />} />
-          <Route path="emergency" element={<PlaceholderPage title="Emergency Dispatch" />} />
+          <Route path="emergency" element={<EmergencyDispatchDesk />} />
           <Route path="settings" element={
             <div className="max-w-7xl mx-auto py-6">
               <ProfileSettings />
