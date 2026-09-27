@@ -13,7 +13,7 @@ import { PlatformDashboard } from './features/platform/components/PlatformDashbo
 import { ClinicManagement } from './features/platform/components/ClinicManagement';
 import { PlatformSettings } from './features/platform/components/PlatformSettings';
 
-import { ReceptionCalendar } from './features/appointments/components/ReceptionCalendar';
+import { AppointmentsHub } from './features/appointments/components/AppointmentsHub';
 import { ProfileSettings } from './features/settings/components/ProfileSettings';
 import { ClinicSettings } from './features/settings/components/ClinicSettings';
 import { Reports } from './features/reports/components/Reports';
@@ -186,7 +186,7 @@ export const App: React.FC = () => {
           <Route path="dashboard" element={<PlaceholderPage title="Dashboard" />} />
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
-          <Route path="appointments" element={<ReceptionCalendar />} />
+          <Route path="appointments" element={<AppointmentsHub />} />
           <Route path="emergency" element={<PlaceholderPage title="Emergency Dispatch" />} />
           <Route path="blood-bank" element={<PlaceholderPage title="Blood Bank" />} />
           <Route path="facilities" element={<PlaceholderPage title="Facilities Directory" />} />
@@ -214,7 +214,7 @@ export const App: React.FC = () => {
           <Route path="dashboard" element={<PlaceholderPage title="Dashboard" />} />
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
-          <Route path="appointments" element={<ReceptionCalendar />} />
+          <Route path="appointments" element={<AppointmentsHub />} />
           <Route path="emergency" element={<PlaceholderPage title="Emergency Dispatch" />} />
           <Route path="blood-bank" element={<PlaceholderPage title="Blood Bank" />} />
           <Route path="reports" element={<Reports />} />
@@ -239,10 +239,10 @@ export const App: React.FC = () => {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<ReceptionCalendar />} />
+          <Route path="dashboard" element={<AppointmentsHub />} />
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
-          <Route path="appointments" element={<ReceptionCalendar />} />
+          <Route path="appointments" element={<AppointmentsHub />} />
           <Route path="emergency" element={<PlaceholderPage title="Emergency Dispatch" />} />
           <Route path="settings" element={
             <div className="max-w-7xl mx-auto py-6">

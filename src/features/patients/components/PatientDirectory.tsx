@@ -46,35 +46,8 @@ export const PatientDirectory: React.FC = () => {
   const handleSelectPatient = async (id: string) => {
     await selectPatient(id);
     const pathSegments = window.location.pathname.split('/');
-    const rolePrefix = pathSegments[1] || 'dentist';
+    const rolePrefix = pathSegments[1] || 'admin';
     navigate(`/${rolePrefix}/patients/${id}`);
-  };
-
-  const handleStartOdontogram = async (patient: Patient) => {
-    const pathSegments = window.location.pathname.split('/');
-    const rolePrefix = pathSegments[1] || 'dentist';
-
-    await selectPatient(patient.id);
-    setActiveTab('odontogram');
-    navigate(`/${rolePrefix}/patients/${patient.id}`);
-  };
-
-  const handleStartVisit = async (patient: Patient) => {
-    const pathSegments = window.location.pathname.split('/');
-    const rolePrefix = pathSegments[1] || 'dentist';
-
-    if (rolePrefix === 'dentist' || rolePrefix === 'admin' || rolePrefix === 'other-dentist') {
-      navigate(`/${rolePrefix}/visit/${patient.id}`);
-      return;
-    }
-
-    addToast({
-      type: 'info',
-      title: 'Open Patient Profile',
-      message: `Opening profile for ${patient.name}. Clinical visits are started by dentists.`,
-    });
-    await selectPatient(patient.id);
-    navigate(`/${rolePrefix}/patients/${patient.id}`);
   };
 
   // Export Patients List using SheetJS
@@ -88,7 +61,7 @@ export const PatientDirectory: React.FC = () => {
       'Mobile Number': p.phone,
       'Date of Birth': p.dateOfBirth,
       'Gender': p.gender,
-      'Attending Doctor': p.assignedDentistName || 'Unassigned',
+      'Attending Physician': (p as any).assignedDentistName || (p as any).physicianName || 'Unassigned',
       'Allergies': p.allergies?.join(', ') || 'None',
       'Medical History': p.medicalHistory?.join(', ') || 'None',
       'Date Registered': p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'
@@ -126,8 +99,8 @@ export const PatientDirectory: React.FC = () => {
       return a.name.localeCompare(b.name);
     }
     if (sortField === 'doctor') {
-      const docA = a.assignedDentistName || 'Unassigned';
-      const docB = b.assignedDentistName || 'Unassigned';
+      const docA = (a as any).assignedDentistName || (a as any).physicianName || 'Unassigned';
+      const docB = (b as any).assignedDentistName || (b as any).physicianName || 'Unassigned';
       return docA.localeCompare(docB) || a.name.localeCompare(b.name);
     }
     const idA = a.displayId || a.id;
@@ -148,7 +121,7 @@ export const PatientDirectory: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-none flex items-center gap-2">
-            <Users className="w-6 h-6 text-red-808" />
+            <Users className="w-6 h-6 text-emerald-700" />
             <span>Patients Directory</span>
           </h2>
           <p className="text-xs text-slate-400 font-semibold mt-1">
@@ -168,7 +141,7 @@ export const PatientDirectory: React.FC = () => {
 
           <Button
             onClick={() => setIsRegisterOpen(true)}
-            className="h-10.5 bg-red-800 hover:bg-red-950 text-white font-bold rounded-xl shadow-md gap-1.5 text-xs px-5"
+            className="h-10.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-md gap-1.5 text-xs px-5"
           >
             <Plus className="w-4 h-4" />
             <span>Register New Patient</span>
@@ -238,7 +211,7 @@ export const PatientDirectory: React.FC = () => {
                 <TableHead className="text-xs font-black text-slate-500 w-[250px]">Patient Name</TableHead>
                 <TableHead className="text-xs font-black text-slate-500">Contact</TableHead>
                 <TableHead className="text-xs font-black text-slate-500">Gender</TableHead>
-                <TableHead className="text-xs font-black text-slate-500">Attending Doctor</TableHead>
+                <TableHead className="text-xs font-black text-slate-500">Attending Physician</TableHead>
                 <TableHead className="text-xs font-black text-slate-500">Alerts</TableHead>
                 <TableHead className="text-xs font-black text-slate-500 text-right">Actions</TableHead>
               </TableRow>
@@ -259,7 +232,7 @@ export const PatientDirectory: React.FC = () => {
                           )}
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-slate-900 group-hover:text-red-808 transition">{patient.name}</h4>
+                          <h4 className="font-bold text-xs text-slate-900 group-hover:text-emerald-700 transition">{patient.name}</h4>
                           <p className="text-[10px] text-slate-400 font-bold uppercase">{patient.displayId || 'N/A'}</p>
                         </div>
                       </div>
@@ -271,7 +244,7 @@ export const PatientDirectory: React.FC = () => {
                       {patient.gender}
                     </TableCell>
                     <TableCell className="text-xs font-semibold text-slate-700">
-                      {patient.assignedDentistName || 'Unassigned'}
+                      {(patient as any).assignedDentistName || (patient as any).physicianName || 'Unassigned'}
                     </TableCell>
                     <TableCell>
                       {patient.allergies && patient.allergies.length > 0 ? (
@@ -288,25 +261,9 @@ export const PatientDirectory: React.FC = () => {
                         <Button
                           size="sm"
                           onClick={() => handleSelectPatient(patient.id)}
-                          className="h-8 rounded-lg text-[10px] font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hidden sm:flex"
+                          className="h-8 rounded-lg text-[10px] font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex"
                         >
-                          Profile
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleStartOdontogram(patient)}
-                          className="h-8 w-8 p-0 flex items-center justify-center rounded-lg text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 shadow-sm transition-colors"
-                          title="View Odontogram"
-                        >
-                          <Activity className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleStartVisit(patient)}
-                          className="h-8 rounded-lg text-[10px] font-bold bg-red-50 hover:bg-red-100 text-red-808 px-3 gap-1 shadow-sm"
-                        >
-                          <Play className="w-3 h-3" />
-                          <span className="hidden sm:inline">Visit</span>
+                          View Profile
                         </Button>
                       </div>
                     </TableCell>
