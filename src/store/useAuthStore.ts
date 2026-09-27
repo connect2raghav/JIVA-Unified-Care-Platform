@@ -37,6 +37,26 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_all_appointments',
     'emergency_dispatch'
   ],
+  'BloodBankManager': [
+    'blood_bank',
+    'view_reports',
+    'facilities'
+  ],
+  'AmbulanceDriver': [
+    'emergency_dispatch',
+    'view_dispatch_requests'
+  ],
+  'LabTechnician': [
+    'view_all_patients',
+    'clinical_records',
+    'view_reports'
+  ],
+  'Patient': [
+    'view_own_profile',
+    'view_own_appointments',
+    'book_appointment',
+    'view_own_reports'
+  ],
   // Legacy role mappings for backward compatibility
   'Dentist': [
     'manage_users', 'manage_clinic', 'view_reports',

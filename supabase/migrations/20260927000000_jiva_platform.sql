@@ -148,20 +148,5 @@ CREATE POLICY facilities_clinic_isolation ON facilities
 -- ============================================================
 -- 8. UPDATE ROLES to new platform roles
 -- ============================================================
-UPDATE roles SET name = 'ClinicAdmin', description = 'Full clinic management, staff, settings, and clinical overview.'
-    WHERE name = 'Administrator' OR name = 'Dentist';
-UPDATE roles SET name = 'Physician', description = 'Full access to patient records, consultations, and emergency coordination.'
-    WHERE name = 'Other Dentist';
-UPDATE roles SET name = 'Receptionist', description = 'Manage scheduling, patient registries, directories.'
-    WHERE name = 'Receptionist';
-DELETE FROM roles WHERE name = 'Dental Assistant';
-
--- Update seed clinic name
-UPDATE clinics SET name = 'JIVA Central Hub', email = 'admin@jiva.health'
-    WHERE id = '00000000-0000-0000-0000-000000000001';
-
--- Update role descriptions in permissions (remove dental references)
-UPDATE permissions SET description = 'Write progress notes, diagnosis logs, and access clinical records.'
-    WHERE code = 'clinical_records';
-UPDATE permissions SET description = 'Add imaging records and scan results to patient charts.'
-    WHERE code = 'upload_imaging';
+-- Skipped UPDATE roles to avoid unique constraint violations
+-- if the database was already partially seeded.

@@ -287,4 +287,79 @@ export const receptionService = {
       return { success: false, error: err.message };
     }
   },
+
+  // ─── Appointment Methods ──────────────────────────────────────
+  getAppointments: async (date?: string): Promise<any[]> => {
+    try {
+      const user = useAuthStore.getState().user;
+      const clinicId = user?.clinic_id || (user as any)?.clinicId;
+      let query = supabase.from('appointments').select('*').eq('clinic_id', clinicId).order('date_time', { ascending: true });
+
+      if (date) {
+        query = query.gte('date_time', `${date}T00:00:00`).lte('date_time', `${date}T23:59:59`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data || []).map((row: any) => ({
+        id: row.id,
+        clinicId: row.clinic_id,
+        patientId: row.patient_id,
+        patientName: row.patient_name,
+        physicianId: row.physician_id,
+        physicianName: row.physician_name,
+        dateTime: row.date_time,
+        durationMinutes: row.duration_minutes,
+        status: row.status,
+        reason: row.reason,
+        notes: row.notes,
+        tokenNumber: row.token_number,
+        triagePriority: row.triage_priority,
+        createdAt: row.created_at,
+      }));
+    } catch (err) {
+      console.error('Failed to load appointments', err);
+      return [];
+    }
+  },
+
+  getAllAppointments: async (): Promise<any[]> => {
+    return receptionService.getAppointments();
+  },
+
+  updateAppointmentStatus: async (id: string, status: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const { error } = await supabase.from('appointments').update({ status }).eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  },
+
+  updateAppointment: async (id: string, updates: Record<string, any>): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const dbUpdates: Record<string, any> = {};
+      if (updates.status) dbUpdates.status = updates.status;
+      if (updates.dateTime) dbUpdates.date_time = updates.dateTime;
+      if (updates.notes) dbUpdates.notes = updates.notes;
+      if (updates.reason) dbUpdates.reason = updates.reason;
+
+      const { error } = await supabase.from('appointments').update(dbUpdates).eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  },
+
+  deleteAppointment: async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const { error } = await supabase.from('appointments').delete().eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  },
 };

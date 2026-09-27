@@ -81,7 +81,7 @@ export const SidebarLayout: React.FC = () => {
         console.error('Failed to load clinic settings', err);
       }
     };
-    if (user?.role === 'ClinicAdmin' || user?.role === 'Physician') {
+    if (['ClinicAdmin', 'Physician', 'BloodBankManager', 'LabTechnician'].includes(user?.role || '')) {
       loadLogo();
     }
   }, [user]);
@@ -128,6 +128,40 @@ export const SidebarLayout: React.FC = () => {
           { name: 'Appointments', href: '/receptionist/appointments', icon: Calendar },
           { name: 'Emergency', href: '/receptionist/emergency', icon: Siren },
         ];
+
+      case 'BloodBankManager' as UserRole:
+        return [
+          { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+          { name: 'Blood Inventory', href: '/admin/blood-bank', icon: Droplets },
+          { name: 'Facilities', href: '/admin/facilities', icon: Building2 },
+          { name: 'Reports', href: '/admin/reports', icon: FileSpreadsheet },
+        ];
+
+      case 'AmbulanceDriver' as UserRole:
+        return [
+          { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+          { name: 'Dispatch', href: '/admin/emergency', icon: Siren },
+          { name: 'Facilities', href: '/admin/facilities', icon: Building2 },
+        ];
+
+      case 'LabTechnician' as UserRole:
+        return [
+          { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+          { name: 'Patients', href: '/admin/patients', icon: Users },
+          { name: 'Reports', href: '/admin/reports', icon: FileSpreadsheet },
+          { name: 'Facilities', href: '/admin/facilities', icon: Building2 },
+        ];
+
+      case 'Patient' as UserRole:
+        return [
+          { name: 'Dashboard', href: '/patient/dashboard', icon: LayoutDashboard },
+          { name: 'Appointments', href: '/patient/appointments', icon: Calendar },
+          { name: 'Emergency', href: '/patient/emergency', icon: Siren },
+          { name: 'Facilities', href: '/patient/facilities', icon: Building2 },
+          { name: 'Reports', href: '/patient/reports', icon: FileSpreadsheet },
+          { name: 'My Profile', href: '/patient/profile', icon: Settings },
+        ];
+
       default:
         return [];
     }
@@ -262,7 +296,7 @@ export const SidebarLayout: React.FC = () => {
         {/* Logo and Brand */}
         <div className="h-16 px-6 border-b border-slate-100 flex items-center gap-3">
           {clinicLogo ? (
-            <img src={clinicLogo} alt="Clinic Logo" className="w-9 h-9 rounded-xl object-cover bg-white shadow-sm" />
+            <img src={clinicLogo} alt="Organization Logo" className="w-9 h-9 rounded-xl object-cover bg-white shadow-sm" />
           ) : (
             <div className="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center text-white shadow-sm shadow-emerald-800/30">
               <HeartPulse className="w-5 h-5" />

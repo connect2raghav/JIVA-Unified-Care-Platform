@@ -11,9 +11,25 @@ export type UserRole =
   | 'SuperAdmin'
   | 'ClinicAdmin'
   | 'Physician'
-  | 'Receptionist';
+  | 'Receptionist'
+  | 'BloodBankManager'
+  | 'AmbulanceDriver'
+  | 'LabTechnician'
+  | 'Patient';
 
-// ─── Clinic ──────────────────────────────────────────────────────
+// Human-readable role labels (no "Clinic" word for generic org)
+export const ROLE_LABELS: Record<UserRole, string> = {
+  SuperAdmin: 'Platform Admin',
+  ClinicAdmin: 'Organization Admin',
+  Physician: 'Physician / Doctor',
+  Receptionist: 'Front Desk / Receptionist',
+  BloodBankManager: 'Blood Bank Manager',
+  AmbulanceDriver: 'Ambulance Driver',
+  LabTechnician: 'Lab / Diagnostics',
+  Patient: 'Patient',
+};
+
+// ─── Organization (formerly "Clinic") ────────────────────────────
 export interface Clinic {
   id: string;
   name: string;
@@ -28,6 +44,8 @@ export interface Clinic {
   appointmentDurationMinutes: number;
   holidays: string[];
   emergencyContact: string;
+  city?: string;
+  orgType?: 'Hospital' | 'Clinic' | 'Blood Bank' | 'Ambulance Service' | 'Diagnostic Lab' | 'Pharmacy';
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +70,7 @@ export interface Patient {
   };
   avatarUrl?: string;
   address?: string;
+  city?: string;
   notes?: string;
   assignedPhysicianId?: string;
   assignedPhysicianName?: string;
@@ -130,10 +149,13 @@ export interface EmergencyRequest {
   assignedAmbulanceId?: string;
   assignedAmbulanceVehicle?: string;
   pickupLocation: string;
+  pickupLat?: number;
+  pickupLng?: number;
   destinationFacility?: string;
   dispatchedAt?: string;
   resolvedAt?: string;
   notes?: string;
+  isBroadcast?: boolean;
   createdAt: string;
 }
 
@@ -197,6 +219,9 @@ export interface DashboardKPI {
   ambulancesAvailable: number;
   bloodUnitsLow: BloodGroup[];
   occupancyRate: number;
+  totalBloodUnits: number;
+  pendingBloodRequests: number;
+  nearbyFacilities: number;
 }
 
 // ─── Common ──────────────────────────────────────────────────────
@@ -206,13 +231,18 @@ export interface UserProfile {
   name: string;
   role: UserRole;
   clinicId?: string;
+  clinic_id?: string;
   phone?: string;
   avatarUrl?: string;
   createdAt: string;
   isActive?: boolean;
+  is_active?: boolean;
   isLocked?: boolean;
+  is_locked?: boolean;
   customPermissions?: string[];
+  custom_permissions?: string[];
   lastLoginAt?: string | null;
+  orgType?: string;
 }
 
 export interface ClinicNotification {
@@ -232,4 +262,21 @@ export interface ActivityLog {
   action: string;
   description: string;
   timestamp: string;
+}
+
+// ─── Lab / Diagnostic Report ─────────────────────────────────────
+export interface LabReport {
+  id: string;
+  clinicId: string;
+  patientId: string;
+  patientName: string;
+  physicianId?: string;
+  physicianName?: string;
+  labName: string;
+  reportType: 'Blood Test' | 'Urine Test' | 'X-Ray' | 'CT Scan' | 'MRI' | 'Ultrasound' | 'ECG' | 'Other';
+  status: 'Pending' | 'In-Progress' | 'Completed' | 'Delivered';
+  reportUrl?: string;
+  findings?: string;
+  createdAt: string;
+  completedAt?: string;
 }

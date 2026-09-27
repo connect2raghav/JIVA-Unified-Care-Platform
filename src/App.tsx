@@ -17,6 +17,7 @@ import { AppointmentsHub } from './features/appointments/components/Appointments
 import { EmergencyDispatchDesk } from './features/emergency/components/EmergencyDispatchDesk';
 import { BloodBankMatrix } from './features/blood-bank/components/BloodBankMatrix';
 import { FacilitiesPage } from './features/facilities/components/FacilitiesPage';
+import { AdminDashboard } from './features/dashboard/components/AdminDashboard';
 import { ProfileSettings } from './features/settings/components/ProfileSettings';
 import { ClinicSettings } from './features/settings/components/ClinicSettings';
 import { Reports } from './features/reports/components/Reports';
@@ -26,19 +27,6 @@ import { AccessDenied } from './components/AccessDenied';
 import { LoadingScreen } from './components/LoadingScreen';
 import { Toaster } from './components/Toaster';
 import type { UserRole } from './types';
-
-// Placeholder components for new modules (Phase 1+)
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
-  <div className="flex items-center justify-center min-h-[50vh]">
-    <div className="text-center space-y-3">
-      <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center">
-        <span className="text-2xl">🚧</span>
-      </div>
-      <h2 className="text-xl font-black text-slate-900">{title}</h2>
-      <p className="text-sm text-slate-500 font-medium">This module is under development.</p>
-    </div>
-  </div>
-);
 
 // Route wrapper to require authentication
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -88,9 +76,6 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
           <pre style={{ whiteSpace: 'pre-wrap', fontSize: 11, marginTop: 10 }}>
             {this.state.error?.toString()}
           </pre>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 9, marginTop: 10, color: '#4b5563' }}>
-            {this.state.error?.stack}
-          </pre>
         </div>
       );
     }
@@ -99,6 +84,35 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 }
 
+// Patient Dashboard (lightweight portal)
+const PatientDashboard: React.FC = () => {
+  const { user } = useAuthStore();
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-black text-slate-900">Welcome, {user?.name?.split(' ')[0]} 👋</h1>
+        <p className="text-sm text-slate-500 font-medium mt-1">Your health portal — view appointments, reports & profile</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { title: 'My Appointments', desc: 'View upcoming and past appointments', icon: '📅', href: '/patient/appointments' },
+          { title: 'My Profile', desc: 'Update personal & medical information', icon: '👤', href: '/patient/profile' },
+          { title: 'My Reports', desc: 'View lab results and diagnostic reports', icon: '📋', href: '/patient/reports' },
+          { title: 'Book Appointment', desc: 'Schedule a new consultation', icon: '➕', href: '/patient/appointments' },
+          { title: 'Emergency', desc: 'Request emergency assistance', icon: '🚨', href: '/patient/emergency' },
+          { title: 'Nearby Facilities', desc: 'Find hospitals, labs & pharmacies', icon: '🏥', href: '/patient/facilities' },
+        ].map(item => (
+          <a key={item.title} href={item.href} className="block p-5 rounded-2xl border border-slate-200 bg-white hover:shadow-lg hover:-translate-y-0.5 transition-all">
+            <span className="text-3xl">{item.icon}</span>
+            <p className="text-sm font-bold text-slate-900 mt-3">{item.title}</p>
+            <p className="text-xs text-slate-500 font-medium mt-1">{item.desc}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading, initializeAuth } = useAuthStore();
 
@@ -106,17 +120,21 @@ export const App: React.FC = () => {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Determine root landing page redirect based on active session
   const getHomeRedirect = () => {
     if (!isAuthenticated || !user) return '/login';
     const homePaths: Record<string, string> = {
       'SuperAdmin': '/platform/dashboard',
       'Super Admin': '/platform/dashboard',
       'ClinicAdmin': '/admin/dashboard',
-      'Dentist': '/admin/dashboard',
       'Physician': '/physician/dashboard',
-      'Other Dentist': '/physician/dashboard',
       'Receptionist': '/receptionist/dashboard',
+      'BloodBankManager': '/admin/blood-bank',
+      'AmbulanceDriver': '/admin/emergency',
+      'LabTechnician': '/admin/reports',
+      'Patient': '/patient/dashboard',
+      // Legacy
+      'Dentist': '/admin/dashboard',
+      'Other Dentist': '/physician/dashboard',
       'Dental Assistant': '/receptionist/dashboard',
     };
     return homePaths[user.role] || '/login';
@@ -138,7 +156,6 @@ export const App: React.FC = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/access-denied" element={<AccessDenied />} />
-
 
         {/* Global Authenticated Routes */}
         <Route
@@ -174,19 +191,19 @@ export const App: React.FC = () => {
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
 
-        {/* ClinicAdmin Portal */}
+        {/* Organization Admin Portal (formerly ClinicAdmin) */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute>
-              <RoleRoute allowedRoles={['ClinicAdmin']}>
+              <RoleRoute allowedRoles={['ClinicAdmin', 'BloodBankManager', 'AmbulanceDriver', 'LabTechnician']}>
                 <SidebarLayout />
               </RoleRoute>
             </ProtectedRoute>
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<PlaceholderPage title="Dashboard" />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
           <Route path="appointments" element={<AppointmentsHub />} />
@@ -214,7 +231,7 @@ export const App: React.FC = () => {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<PlaceholderPage title="Dashboard" />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
           <Route path="appointments" element={<AppointmentsHub />} />
@@ -242,7 +259,7 @@ export const App: React.FC = () => {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<AppointmentsHub />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="patients" element={<PatientDirectory />} />
           <Route path="patients/:id" element={<PatientProfileLayout />} />
           <Route path="appointments" element={<AppointmentsHub />} />
@@ -255,12 +272,37 @@ export const App: React.FC = () => {
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
 
-        {/* Legacy route redirects for backward compatibility */}
+        {/* Patient Portal */}
+        <Route
+          path="/patient"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={['Patient']}>
+                <SidebarLayout />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<PatientDashboard />} />
+          <Route path="appointments" element={<AppointmentsHub />} />
+          <Route path="emergency" element={<EmergencyDispatchDesk />} />
+          <Route path="facilities" element={<FacilitiesPage />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="profile" element={
+            <div className="max-w-7xl mx-auto py-6">
+              <ProfileSettings />
+            </div>
+          } />
+          <Route path="*" element={<Navigate to="dashboard" replace />} />
+        </Route>
+
+        {/* Legacy route redirects */}
         <Route path="/dentist/*" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/other-dentist/*" element={<Navigate to="/physician/dashboard" replace />} />
         <Route path="/assistant/*" element={<Navigate to="/receptionist/dashboard" replace />} />
 
-        {/* Fallback Redirections */}
+        {/* Fallback */}
         <Route path="/" element={<Navigate to={getHomeRedirect()} replace />} />
         <Route path="*" element={<Navigate to={getHomeRedirect()} replace />} />
       </Routes>

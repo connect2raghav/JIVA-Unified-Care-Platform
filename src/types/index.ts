@@ -5,7 +5,8 @@
  * New code should import from '@/types/domain'.
  * Legacy re-exports kept here for backward compatibility during migration.
  */
-export type { UserRole, UserProfile, Patient, Appointment, AppointmentStatus, Clinic, Ambulance, AmbulanceStatus, EmergencyRequest, EmergencyPriority, EmergencyStatus, BloodInventoryItem, BloodRequest, BloodGroup, BloodComponent, Facility, DashboardKPI, ClinicNotification, ActivityLog } from './domain';
+export type { UserRole, UserProfile, Patient, Appointment, AppointmentStatus, Clinic, Ambulance, AmbulanceStatus, EmergencyRequest, EmergencyPriority, EmergencyStatus, BloodInventoryItem, BloodRequest, BloodGroup, BloodComponent, Facility, DashboardKPI, ClinicNotification, ActivityLog, LabReport } from './domain';
+export { ROLE_LABELS } from './domain';
 
 // ─── Legacy types kept for remaining non-dental components ───────
 export interface Vitals {
