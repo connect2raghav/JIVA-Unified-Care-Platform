@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# JIVA Unified Care Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+JIVA is an administrative coordination workspace for clinics. It brings patient registration, appointments, emergency dispatch, blood inventory, facilities lookup, and operational dashboards into one multi-tenant application.
 
-Currently, two official plugins are available:
+The product supports coordination and record keeping only. It does not provide diagnosis, treatment recommendations, or automated clinical decision-making.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React 19, TypeScript, and Vite
+- Supabase Auth and PostgreSQL with clinic-scoped row-level security
+- Tailwind CSS and the existing Shadcn-style UI primitives
+- Lucide icons, Recharts, React Router, Zustand, and jsPDF
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Local setup
 
-## Expanding the Oxlint configuration
+1. Install Node.js 20 or newer.
+2. Install dependencies with `npm install`.
+3. Copy `.env.example` to `.env` and set the Supabase URL and anonymous key.
+4. Apply the SQL migrations in `supabase/migrations/` to the target Supabase project.
+5. Start the Vite server with `npm run dev`.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Useful checks:
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm run build
+npm run lint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The Vite preview and production container should listen on the `PORT` environment variable, defaulting to `8080` in deployment configuration.
+
+## Main views
+
+- Patient Register
+- Appointment Queue
+- Emergency Dispatch Desk
+- Blood Stock Matrix
+- Facilities Directory
+- Operations Dashboard
+
+The Facilities Directory is clinic-scoped and supports search, facility-type filtering, emergency-capability filtering, ICU-bed visibility, and direct phone or email actions. It is a directory lookup and does not rank or recommend facilities.
+
+## Deployment
+
+Build the static application with `npm run build`, then serve the generated `dist/` directory from a static web server or the project container. Configure the production host to forward client-side routes to `index.html`.
+
+Before release, verify the database migrations, Supabase RLS policies, environment variables, build output, and the administrative-only product boundary.
